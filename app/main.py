@@ -3,7 +3,7 @@ from .routes.papers import router as papers_router
 from .routes.resources import router as resources_router
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(title="GATE Free Resources")
 
 app.include_router(papers_router)
 app.include_router(resources_router)

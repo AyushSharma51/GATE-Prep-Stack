@@ -1,13 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+import uuid
+from sqlalchemy import Column, String, ForeignKey, Boolean
+from sqlalchemy.dialects.postgresql import UUID  # Use this for Postgres-specific UUID
 from sqlalchemy.orm import relationship
 from .database import Base
-
 
 class Branch(Base):
     __tablename__ = "branches"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    # Set primary_key to UUID with a default generator
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    name = Column(String, unique=True, index=True)
+    is_deleted = Column(Boolean, default=False)
 
     subjects = relationship("Subject", back_populates="branch")
 
@@ -15,9 +18,12 @@ class Branch(Base):
 class Subject(Base):
     __tablename__ = "subjects"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    branch_id = Column(Integer, ForeignKey("branches.id"))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    name = Column(String, index=True)
+    
+    # ForeignKey updated to UUID type
+    branch_id = Column(UUID(as_uuid=True), ForeignKey("branches.id"))
+    is_deleted = Column(Boolean, default=False)
 
     branch = relationship("Branch", back_populates="subjects")
     videos = relationship("VideoResource", back_populates="subject")
@@ -26,9 +32,13 @@ class Subject(Base):
 class VideoResource(Base):
     __tablename__ = "video_resources"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    title = Column(String, index=True)
+    is_deleted = Column(Boolean, default=False)
+
     playlist_url = Column(String)
-    subject_id = Column(Integer, ForeignKey("subjects.id"))
+    
+    # ForeignKey updated to UUID type
+    subject_id = Column(UUID(as_uuid=True), ForeignKey("subjects.id"))
 
     subject = relationship("Subject", back_populates="videos")
