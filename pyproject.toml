@@ -13,7 +13,8 @@ dependencies = [
     "nicegui (>=3.9.0,<4.0.0)",
     "sqlalchemy (>=2.0.48,<3.0.0)",
     "psycopg2-binary (>=2.9.11,<3.0.0)",
-    "alembic (>=1.18.4,<2.0.0)"
+    "alembic (>=1.18.4,<2.0.0)",
+    "openai (>=2.30.0,<3.0.0)"
 ]
 
 

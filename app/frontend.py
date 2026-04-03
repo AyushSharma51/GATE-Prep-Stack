@@ -1,166 +1,166 @@
-from nicegui import ui, app
-from pathlib import Path
+import streamlit as st
+import requests
 
-# ─────────────────────────────
-# CONFIG
-# ─────────────────────────────
+BASE_URL = "http://127.0.0.1:8000"
 
-BASE_DIR = Path(__file__).parent
-PAPERS_DIR = BASE_DIR / "papers"
+st.set_page_config(page_title="GATE Resources", layout="wide")
 
-app.add_static_files('/papers', str(PAPERS_DIR))
+st.title("📚 GATE Preparation Hub")
 
-BRANCHES = {
-    "cse": "Computer Science",
-    "da": "Data Science",
-    "me": "Mechanical",
+# ===================== BRANCH MAPPING =====================
+BRANCH_FULL_FORM = {
+    "cse": "Computer Science and Engineering",
+    "da": "Data Science and Artificial Intelligence",
+    "me": "Mechanical Engineering",
+    "ee": "Electrical Engineering",
+    "ce": "Civil Engineering",
+    "ec": "Electronics and Communication Engineering"
 }
 
-# ─────────────────────────────
-# STATE
-# ─────────────────────────────
+# ===================== PYQ SECTION =====================
+st.header("📄 Previous Year Question Papers")
 
-class State:
-    def __init__(self):
-        self.branch = "cse"
-        self.papers = []
-        self.selected = None
+col1, col2 = st.columns(2)
 
-    def load(self):
-        path = PAPERS_DIR / self.branch
+with col1:
+    branch = st.selectbox(
+        "Select Branch",
+        options=list(BRANCH_FULL_FORM.keys()),
+        format_func=lambda x: BRANCH_FULL_FORM[x]
+    )
 
-        if not path.exists():
-            self.papers = []
-            self.selected = None
-            return
+with col2:
+    year = st.text_input("Enter Year (e.g. 2023)")
 
-        self.papers = sorted([f.stem for f in path.glob("*.pdf")], reverse=True)
-        self.selected = self.papers[0] if self.papers else None
-
-
-state = State()
-state.load()
-
-# ─────────────────────────────
-# HELPERS
-# ─────────────────────────────
-
-def format_name(name):
-    if "-" in name:
-        y, s = name.split("-")
-        return f"{y} • Shift {s}"
-    return name
+if st.button("Get Paper"):
+    st.session_state["paper_url"] = f"{BASE_URL}/papers/{branch}/{year}"
+    st.session_state["paper_name"] = f"{branch}_{year}.pdf"
+    st.session_state["view_mode"] = False
 
 
-def get_url():
-    if state.selected:
-        return f"/papers/{state.branch}/{state.selected}.pdf"
-    return None
+# ===================== OPTIONS =====================
+if "paper_url" in st.session_state:
+    st.subheader("Options")
 
+    col1, col2 = st.columns(2)
 
-# ─────────────────────────────
-# UI
-# ─────────────────────────────
+    # 👉 VIEW PAPER
+    with col1:
+        if st.button("👁️ View Paper"):
+            st.session_state["view_mode"] = True
 
-@ui.page("/")
-def main():
-
-    # 🔤 FONT + ICONS
-    ui.add_head_html("""
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <style>
-        * {
-            font-family: 'Manrope', sans-serif;
-        }
-    </style>
-    """)
-
-    # ✅ Proper dark mode controller
-    dark = ui.dark_mode()
-    dark.enable()  # start in dark mode
-
-    with ui.column().classes("w-full max-w-5xl mx-auto p-6 gap-6"):
-
-        # HEADER
-        with ui.row().classes("w-full justify-between items-center"):
-            ui.label("📘 GATE Papers").classes("text-3xl font-bold")
-
-            ui.switch(
-                "🌙 Dark Mode",
-                value=True,
-                on_change=lambda e: toggle_theme(e.value)
+    # 👉 DOWNLOAD PAPER
+    with col2:
+        response = requests.get(st.session_state["paper_url"])
+        if response.status_code == 200:
+            st.download_button(
+                label="⬇️ Download Paper",
+                data=response.content,
+                file_name=st.session_state["paper_name"],
+                mime="application/pdf"
             )
-
-        ui.separator()
-
-        # MAIN CARD
-        @ui.refreshable
-        def container():
-
-            with ui.card().classes("w-full p-6 rounded-xl shadow-lg"):
-
-                # Branch
-                ui.label("Select Branch").classes("text-lg font-semibold")
-
-                with ui.row().classes("gap-3"):
-                    for key, name in BRANCHES.items():
-
-                        def select(k=key):
-                            state.branch = k
-                            state.load()
-                            container.refresh()
-
-                        ui.button(name, on_click=select).props("color=primary")
-
-                # Paper
-                ui.label("Select Paper").classes("text-lg font-semibold mt-4")
-
-                ui.select(
-                    options={p: format_name(p) for p in state.papers},
-                    value=state.selected,
-                    on_change=lambda e: setattr(state, "selected", e.value)
-                ).classes("w-full")
-
-                # Buttons
-                with ui.row().classes("gap-3 mt-4"):
-
-                    if get_url():
-                        ui.link(
-                            "📖 View",
-                            target=get_url(),
-                            new_tab=True
-                        ).classes("px-4 py-2 bg-blue-500 text-white rounded")
-
-                    ui.button(
-                        "⬇ Download",
-                        on_click=download
-                    ).props("outline")
-
-        container()
+        else:
+            st.error("Paper not found ❌")
 
 
-# ─────────────────────────────
-# ACTIONS
-# ─────────────────────────────
+# ===================== VIEW MODE =====================
+if st.session_state.get("view_mode"):
+    st.subheader("📖 Viewing Paper")
 
-def toggle_theme(value):
-    if value:
-        ui.dark_mode().enable()
+    pdf_url = st.session_state["paper_url"]
+
+    st.markdown(
+        f'<iframe src="{pdf_url}" width="100%" height="600"></iframe>',
+        unsafe_allow_html=True
+    )
+
+
+# ===================== FREE RESOURCES =====================
+st.header("🎯 Free Resources")
+
+# STEP 1: LOAD BRANCHES
+branches_res = requests.get(f"{BASE_URL}/resources/branches")
+
+if branches_res.status_code == 200:
+    branches = branches_res.json()
+
+    branch_options = {b["name"]: b["id"] for b in branches}
+
+    selected_branch = st.selectbox("Choose Branch", list(branch_options.keys()))
+
+    branch_id = branch_options[selected_branch]
+
+    # STEP 2: LOAD SUBJECTS
+    subjects_res = requests.get(f"{BASE_URL}/resources/subjects/{branch_id}")
+
+    if subjects_res.status_code == 200:
+        subjects = subjects_res.json()
+
+        subject_options = {s["name"]: s["id"] for s in subjects}
+
+        selected_subject = st.selectbox("Choose Subject", list(subject_options.keys()))
+
+        subject_id = subject_options[selected_subject]
+
+        # STEP 3: LOAD VIDEOS
+        videos_res = requests.get(f"{BASE_URL}/resources/videos/{subject_id}")
+
+        if videos_res.status_code == 200:
+            videos = videos_res.json()
+
+            st.subheader("🎥 Videos")
+
+            for v in videos:
+                url = v["playlist_url"]
+
+                st.markdown("---")
+
+                col1, col2 = st.columns([1, 3])
+
+                # 👉 LEFT: REAL THUMBNAIL
+                with col1:
+                    video_id = None
+
+                    # 🎯 Normal video OR playlist with video
+                    if "watch?v=" in url:
+                        video_id = url.split("v=")[-1].split("&")[0]
+
+                    # 🎯 Short link
+                    elif "youtu.be" in url:
+                        video_id = url.split("/")[-1]
+
+                    if video_id:
+                        thumbnail = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+
+                        st.markdown(
+                            f"""
+                            <a href="{url}" target="_blank">
+                                <img src="{thumbnail}" width="260" style="border-radius:12px;">
+                            </a>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        # ❌ Playlist without video_id (no thumbnail possible)
+                        st.markdown(
+                            f"""
+                            <a href="{url}" target="_blank">
+                                <img src="https://img.icons8.com/color/240/youtube-play.png" width="120">
+                            </a>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+                # 👉 RIGHT: TITLE + BUTTON
+                with col2:
+                    st.markdown(f"### {v['title']}")
+                    st.link_button("▶️ Open Playlist", url)
+
+        else:
+            st.error("No videos found")
+
     else:
-        ui.dark_mode().disable()
+        st.error("No subjects found")
 
-
-def download():
-    if state.selected:
-        path = PAPERS_DIR / state.branch / f"{state.selected}.pdf"
-        if path.exists():
-            ui.download(path, f"{state.branch}_{state.selected}.pdf")
-
-
-# ─────────────────────────────
-# RUN
-# ─────────────────────────────
-
-ui.run(port=8080, reload=True)
+else:
+    st.error("Failed to load branches")

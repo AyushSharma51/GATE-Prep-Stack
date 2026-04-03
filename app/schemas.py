@@ -1,11 +1,12 @@
 from uuid import UUID
 from pydantic import BaseModel, HttpUrl, field_validator, ConfigDict
-from typing import Optional
+from typing import Dict, List, Optional
 from enum import Enum
 
 # -------------------------------
 # ENUM
 # -------------------------------
+
 
 class GateBranch(str, Enum):
     CSE = "cse"
@@ -14,6 +15,16 @@ class GateBranch(str, Enum):
     EE = "ee"
     CE = "ce"
     EC = "ec"
+
+# Mapping for display
+BRANCH_FULL_FORM = {
+    "cse": "Computer Science and Engineering",
+    "da": "Data Science and Artificial Intelligence",
+    "me": "Mechanical Engineering",
+    "ee": "Electrical Engineering",
+    "ce": "Civil Engineering",
+    "ec": "Electronics and Communication Engineering"
+}
 
 # -------------------------------
 # BRANCH
@@ -98,3 +109,37 @@ class VideoResponse(BaseModel):
     subject: SubjectResponse
 
     model_config = ConfigDict(from_attributes=True)
+
+#----------------------------------------------
+#------------------TEST------------------------
+#----------------------------------------------
+
+class QuestionOut(BaseModel):
+    id: UUID
+    question_text: str
+    options: Dict[str, str]
+
+    class Config:
+        from_attributes = True
+
+
+class TestOut(BaseModel):
+    id: UUID
+    questions: List[QuestionOut]
+
+
+class SubmitTest(BaseModel):
+    answers: Dict[UUID, str]
+
+
+class TestResult(BaseModel):
+    score: int
+    total: int
+    percentage: float
+
+
+class GenerateTestRequest(BaseModel):
+    test_type: str                  # "subject" or "full"
+    subject_id: Optional[UUID] = None
+    branch_id: Optional[UUID] = None
+    num_questions: Optional[int] = 10

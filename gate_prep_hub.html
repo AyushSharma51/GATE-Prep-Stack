@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GATE Prep Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --white: #ffffff;
+    --ink: #0d0d0d;
+    --ink2: #1a1a1a;
+    --muted: #888880;
+    --border: #d8d5cf;
+    --accent: #1a56ff;
+    --accent2: #0033cc;
+    --yellow: #ffe234;
+    --red: #e63329;
+    --surface: #eeece8;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo-dot {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 3px;
+  }
+
+  .nav-tab {
+    padding: 7px 20px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+
+  .nav-tab.active {
+    background: var(--ink);
+    color: var(--yellow);
+  }
+
+  .nav-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 72px 48px 60px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: 'GATE';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(13,13,13,0.05);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 9vw, 120px);
+    line-height: 0.92;
+    letter-spacing: 1px;
+    color: var(--ink);
+    max-width: 800px;
+    margin-bottom: 28px;
+  }
+
+  .hero-title span {
+    color: var(--accent);
+    display: inline-block;
+    position: relative;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--muted);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.38em;
+    font-weight: 400;
+    vertical-align: middle;
+    letter-spacing: 0;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 480px;
+    font-weight: 400;
+  }
+
+  .hero-pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    background: var(--white);
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px 100px;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── PYQ ── */
+  .pyq-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 48px;
+    background: var(--white);
+  }
+
+  .pyq-sidebar {
+    background: var(--ink2);
+    color: #fff;
+    padding: 36px 32px;
+    border-right: 1px solid #333;
+  }
+
+  .pyq-sidebar-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 28px;
+  }
+
+  .pyq-main {
+    padding: 36px 40px;
+  }
+
+  .field-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  select, input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  select:focus, input:focus {
+    border-color: var(--accent);
+    background: var(--white);
+  }
+
+  .pyq-sidebar select,
+  .pyq-sidebar input {
+    background: rgba(255,255,255,0.06);
+    border-color: #333;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  .pyq-sidebar select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  }
+
+  .pyq-sidebar select:focus,
+  .pyq-sidebar input:focus {
+    border-color: var(--yellow);
+    background: rgba(255,255,255,0.1);
+    outline: none;
+    box-shadow: none;
+  }
+
+  .pyq-sidebar select option { background: #1a1a1a; color: #fff; }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 28px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .btn-primary:hover { background: var(--accent2); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 24px;
+    background: var(--white);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--ink); background: var(--surface); }
+
+  .pyq-result-area {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pyq-placeholder {
+    text-align: center;
+  }
+
+  .pyq-placeholder-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .pyq-placeholder-text {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .pyq-found-panel { width: 100%; }
+
+  .pyq-found-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+
+  .pyq-found-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .pyq-found-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .pyq-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .msg-success {
+    background: #e8f5ef;
+    border: 1px solid #a3d9be;
+    color: #1a7a4a;
+    padding: 11px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .msg-error {
+    background: #fdf0ef;
+    border: 1px solid #f0aba6;
+    color: var(--red);
+    padding: 11px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pdf-frame {
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .pdf-frame iframe { display: block; width: 100%; height: 580px; border: none; }
+
+  /* ── RESOURCES ── */
+  .res-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 48px;
+    padding: 28px 32px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .res-controls-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    grid-column: 1 / -1;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  /* ── VIDEO GRID ── */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1px;
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--border);
+  }
+
+  .video-card {
+    background: var(--white);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: background 0.15s;
+  }
+
+  .video-card:hover { background: var(--surface); }
+
+  .thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .thumb-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+    filter: grayscale(15%);
+  }
+
+  .video-card:hover .thumb-wrap img {
+    transform: scale(1.04);
+    filter: grayscale(0%);
+  }
+
+  .thumb-fallback {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    background: var(--surface);
+  }
+
+  .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.12);
+    transition: background 0.15s;
+  }
+
+  .video-card:hover .play-overlay { background: rgba(0,0,0,0.04); }
+
+  .play-btn-circle {
+    width: 52px; height: 52px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  }
+
+  .video-card:hover .play-btn-circle {
+    background: var(--accent);
+    transform: scale(1.1);
+  }
+
+  .play-btn-circle svg { fill: var(--ink); margin-left: 3px; transition: fill 0.15s; }
+  .video-card:hover .play-btn-circle svg { fill: #fff; }
+
+  .playlist-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .video-info {
+    padding: 16px 18px 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .video-title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .video-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .video-meta::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* ── SKELETON ── */
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+  }
+
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  .skel-card { background: var(--white); }
+  .skel-thumb { width: 100%; aspect-ratio: 16/9; }
+  .skel-line1 { height: 14px; margin: 16px 18px 8px; border-radius: 2px; width: 65%; }
+  .skel-line2 { height: 10px; margin: 0 18px 18px; border-radius: 2px; width: 35%; }
+
+  /* ── EMPTY ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 72px 20px;
+    background: var(--white);
+  }
+
+  .empty-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .empty-text { font-size: 14px; color: var(--muted); }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-top: 48px;
+    padding-bottom: 0;
+    border-top: 1px solid var(--border);
+    margin-top: 36px;
+  }
+
+  .section-header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+
+  .section-header-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 768px) {
+    nav { padding: 0 20px; }
+    .hero { padding: 48px 20px 40px; }
+    main { padding: 0 20px 80px; }
+    .pyq-grid { grid-template-columns: 1fr; }
+    .pyq-sidebar { border-right: none; border-bottom: 1px solid #333; }
+    .res-controls { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="nav-logo-dot"></span>GATE PREP
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('pyq')">Papers</button>
+    <button class="nav-tab" onclick="switchTab('resources')">Resources</button>
+  </div>
+  <span class="nav-tag">2024 Edition</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Graduate Aptitude Test in Engineering</div>
+  <h1 class="hero-title">
+    Your <span>exam prep</span><br>
+    starts <em>here.</em>
+  </h1>
+  <p class="hero-sub">Access previous year question papers and curated video resources for every GATE branch, all in one place.</p>
+  <div class="hero-pills">
+    <span class="pill">CSE</span>
+    <span class="pill">DA</span>
+    <span class="pill">ME</span>
+    <span class="pill">EE</span>
+    <span class="pill">CE</span>
+    <span class="pill">ECE</span>
+    <span class="pill">Free Access</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ── PYQ ── -->
+  <div id="tab-pyq" class="section active">
+    <div class="section-header">
+      <span class="section-header-title">Previous Year Papers</span>
+      <span class="section-header-num">01 / PAPERS</span>
+    </div>
+
+    <div class="pyq-grid">
+      <!-- Sidebar -->
+      <div class="pyq-sidebar">
+        <div class="pyq-sidebar-label">Configure Paper</div>
+
+        <label class="field-label" style="color:#555">Branch</label>
+        <select id="pyq-branch">
+          <option value="cse">Computer Science & Engg.</option>
+          <option value="da">Data Science & AI</option>
+          <option value="me">Mechanical Engineering</option>
+          <option value="ee">Electrical Engineering</option>
+          <option value="ce">Civil Engineering</option>
+          <option value="ec">Electronics & Communication</option>
+        </select>
+
+        <label class="field-label" style="color:#555">Year</label>
+        <input type="text" id="pyq-year" placeholder="e.g. 2023" maxlength="4"/>
+
+        <button class="btn-primary" onclick="fetchPaper()" style="background:var(--yellow);color:var(--ink);font-weight:700;margin-top:4px;">
+          Search Paper →
+        </button>
+
+        <div id="pyq-msg"></div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="pyq-main">
+        <div class="pyq-result-area" id="pyq-result">
+          <div class="pyq-placeholder">
+            <div class="pyq-placeholder-num">?</div>
+            <div class="pyq-placeholder-text">Select branch &amp; year, then search</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pyq-viewer"></div>
+  </div>
+
+  <!-- ── RESOURCES ── -->
+  <div id="tab-resources" class="section">
+    <div class="section-header">
+      <span class="section-header-title">Free Video Resources</span>
+      <span class="section-header-num">02 / RESOURCES</span>
+    </div>
+
+    <div class="res-controls">
+      <div class="res-controls-label">Filter by Branch & Subject</div>
+      <div>
+        <label class="field-label">Branch</label>
+        <select id="res-branch" onchange="loadSubjects()">
+          <option value="">Loading...</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Subject</label>
+        <select id="res-subject" onchange="loadVideos()">
+          <option value="">Select branch first</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="videos-section">
+      <div class="video-grid">
+        <div class="empty-state">
+          <div class="empty-icon">▶</div>
+          <div class="empty-text">Select a branch and subject to load playlists</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const BASE_URL = "http://127.0.0.1:8000";
+  let currentPaperUrl = null;
+  let currentPaperName = null;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.nav-tab').forEach((t, i) =>
+      t.classList.toggle('active', ['pyq','resources'][i] === tab));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    if (tab === 'resources' && document.getElementById('res-branch').options[0].value === '') {
+      loadBranches();
+    }
+  }
+
+  async function fetchPaper() {
+    const branch = document.getElementById('pyq-branch').value;
+    const year   = document.getElementById('pyq-year').value.trim();
+    const msg    = document.getElementById('pyq-msg');
+    const result = document.getElementById('pyq-result');
+
+    if (!year || year.length !== 4 || isNaN(year)) {
+      msg.innerHTML = '<div class="msg-error">⚠ Enter a valid 4-digit year</div>';
+      return;
+    }
+
+    msg.innerHTML = '';
+    currentPaperUrl  = `${BASE_URL}/papers/${branch}/${year}`;
+    currentPaperName = `GATE_${branch.toUpperCase()}_${year}.pdf`;
+
+    const branchLabel = document.getElementById('pyq-branch').selectedOptions[0].text;
+
+    result.innerHTML = `
+      <div class="pyq-found-panel">
+        <div class="pyq-found-header">
+          <div>
+            <div class="pyq-found-title">GATE ${year}</div>
+            <div class="pyq-found-meta">${branchLabel.toUpperCase()} · PDF</div>
+          </div>
+          <div class="pyq-actions">
+            <button class="btn-secondary" onclick="viewPaper()">View Paper</button>
+            <button class="btn-secondary" onclick="downloadPaper()" style="border-color:var(--accent);color:var(--accent)">↓ Download</button>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6">
+          Paper located. Use the buttons above to view it inline or download the PDF to your device.
+        </div>
+      </div>`;
+
+    msg.innerHTML = '<div class="msg-success">✓ Paper located successfully</div>';
+  }
+
+  function viewPaper() {
+    const viewer = document.getElementById('pyq-viewer');
+    viewer.innerHTML = `
+      <div class="pdf-frame">
+        <iframe src="${currentPaperUrl}" title="GATE Paper"></iframe>
+      </div>`;
+    viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function downloadPaper() {
+    try {
+      const res = await fetch(currentPaperUrl);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(blob),
+        download: currentPaperName
+      });
+      a.click();
+    } catch {
+      document.getElementById('pyq-msg').innerHTML =
+        '<div class="msg-error">✕ Paper not found for this selection.</div>';
+    }
+  }
+
+  async function loadBranches() {
+    try {
+      const res = await fetch(`${BASE_URL}/resources/branches`);
+      const branches = await res.json();
+      const sel = document.getElementById('res-branch');
+      sel.innerHTML = branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+      loadSubjects();
+    } catch {
+      document.getElementById('res-branch').innerHTML = '<option>Failed to load</option>';
+    }
+  }
+
+  async function loadSubjects() {
+    const branchId = document.getElementById('res-branch').value;
+    const subSel = document.getElementById('res-subject');
+    subSel.innerHTML = '<option>Loading...</option>';
+    showSkeleton();
+    try {
+      const res = await fetch(`${BASE_URL}/resources/subjects/${branchId}`);
+      const subjects = await res.json();
+      subSel.innerHTML = subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      loadVideos();
+    } catch {
+      subSel.innerHTML = '<option>Error</option>';
+    }
+  }
+
+  async function loadVideos() {
+    const subjectId = document.getElementById('res-subject').value;
+    showSkeleton();
+    try {
+      const res = await fetch(`${BASE_URL}/resources/videos/${subjectId}`);
+      const videos = await res.json();
+      const section = document.getElementById('videos-section');
+      if (!videos?.length) {
+        section.innerHTML = `<div class="video-grid"><div class="empty-state"><div class="empty-icon">∅</div><div class="empty-text">No videos found for this subject</div></div></div>`;
+        return;
+      }
+      section.innerHTML = `<div class="video-grid">${videos.map(videoCard).join('')}</div>`;
+    } catch {
+      document.getElementById('videos-section').innerHTML =
+        `<div class="video-grid"><div class="empty-state"><div class="empty-icon">!</div><div class="empty-text">Could not load videos</div></div></div>`;
+    }
+  }
+
+  function getVideoId(url) {
+    if (!url) return null;
+    if (url.includes('watch?v=')) return url.split('v=')[1].split('&')[0];
+    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
+    return null;
+  }
+
+  function videoCard(v) {
+    const url   = v.playlist_url;
+    const vid   = getVideoId(url);
+    const thumb = vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : null;
+    const isPl  = url.includes('list=');
+
+    return `
+      <a class="video-card" href="${url}" target="_blank" rel="noopener">
+        <div class="thumb-wrap">
+          ${thumb
+            ? `<img src="${thumb}" alt="${v.title}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=thumb-fallback>▶</div>'">`
+            : `<div class="thumb-fallback">▶</div>`}
+          <div class="play-overlay">
+            <div class="play-btn-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+          ${isPl ? '<div class="playlist-badge">Playlist</div>' : ''}
+        </div>
+        <div class="video-info">
+          <div class="video-title">${v.title}</div>
+          <div class="video-meta">YouTube · ${isPl ? 'Playlist' : 'Video'}</div>
+        </div>
+      </a>`;
+  }
+
+  function showSkeleton() {
+    document.getElementById('videos-section').innerHTML =
+      `<div class="video-grid">${Array(6).fill(`
+        <div class="skel-card">
+          <div class="skel-thumb skeleton"></div>
+          <div class="skel-line1 skeleton"></div>
+          <div class="skel-line2 skeleton"></div>
+        </div>`).join('')}</div>`;
+  }
+</script>
+</body>
+</html>

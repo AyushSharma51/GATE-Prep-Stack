@@ -15,13 +15,13 @@ from app.database import get_db
 from app import db_models as models
 from uuid import UUID
 
-router = APIRouter(prefix="/resources", tags=["Resources"])
+router = APIRouter(prefix="/resources")
 
 
 # -------------------------------
 # GET ALL BRANCHES
 # -------------------------------
-@router.get("/branches", response_model=list[BranchResponse])
+@router.get("/branches", response_model=list[BranchResponse], tags=["User-Resources"])
 def get_branches(db: Session = Depends(get_db)):
     branches = db.query(models.Branch).filter(models.Branch.is_deleted .is_(False)).all()
     if not branches:
@@ -32,7 +32,7 @@ def get_branches(db: Session = Depends(get_db)):
 # -------------------------------
 # GET SUBJECTS BY BRANCH
 # -------------------------------
-@router.get("/subjects/{branch_id}", response_model=list[SubjectResponse])
+@router.get("/subjects/{branch_id}", response_model=list[SubjectResponse], tags=["User-Resources"])
 def get_subjects(branch_id: UUID, db: Session = Depends(get_db)):
     subjects = db.query(models.Subject).filter(
         models.Subject.branch_id == branch_id,
@@ -48,7 +48,7 @@ def get_subjects(branch_id: UUID, db: Session = Depends(get_db)):
 # -------------------------------
 # GET VIDEOS BY SUBJECT
 # -------------------------------
-@router.get("/videos/{subject_id}", response_model=list[VideoResponse])
+@router.get("/videos/{subject_id}", response_model=list[VideoResponse], tags=["User-Resources"])
 def get_videos(subject_id: UUID, db: Session = Depends(get_db)):
 
     videos = db.query(models.VideoResource).filter(
@@ -65,7 +65,7 @@ def get_videos(subject_id: UUID, db: Session = Depends(get_db)):
 # -------------------------------
 # CREATE BRANCH
 # -------------------------------
-@router.post("/branches", response_model=BranchResponse)
+@router.post("/branches", response_model=BranchResponse, tags=["Admin-Resources"])
 def create_branch(data: BranchCreate, db: Session = Depends(get_db)):
 
     existing = db.query(models.Branch).filter(models.Branch.name == data.name).first()
@@ -84,7 +84,7 @@ def create_branch(data: BranchCreate, db: Session = Depends(get_db)):
 # -------------------------------
 # CREATE SUBJECT
 # -------------------------------
-@router.post("/subjects", response_model=SubjectResponse)
+@router.post("/subjects", response_model=SubjectResponse, tags=["Admin-Resources"])
 def create_subject(data: SubjectCreate, db: Session = Depends(get_db)):
 
     branch = db.query(models.Branch).filter(models.Branch.id == data.branch_id).first()
@@ -103,7 +103,7 @@ def create_subject(data: SubjectCreate, db: Session = Depends(get_db)):
 # -------------------------------
 # CREATE VIDEO RESOURCE
 # -------------------------------
-@router.post("/videos", response_model=VideoResponse)
+@router.post("/videos", response_model=VideoResponse, tags=["Admin-Resources"])
 def create_video(data: VideoCreate, db: Session = Depends(get_db)):
 
     subject = (
@@ -113,7 +113,7 @@ def create_video(data: VideoCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Subject not found")
 
     video = models.VideoResource(
-        title=data.title, playlist_url=data.playlist_url, subject_id=data.subject_id
+        title=data.title, playlist_url=str(data.playlist_url), subject_id=data.subject_id
     )
 
     db.add(video)
@@ -126,7 +126,7 @@ def create_video(data: VideoCreate, db: Session = Depends(get_db)):
 # -------------------------------
 # UPDATE BRANCH
 # -------------------------------
-@router.patch("/branches/{branch_id}", response_model=BranchResponse)
+@router.patch("/branches/{branch_id}", response_model=BranchResponse, tags=["Admin-Resources"])
 def update_branch(branch_id: UUID, data: BranchUpdate, db: Session = Depends(get_db)):
 
     branch = db.query(models.Branch).filter(models.Branch.id == branch_id).first()
@@ -146,7 +146,7 @@ def update_branch(branch_id: UUID, data: BranchUpdate, db: Session = Depends(get
 # -------------------------------
 # UPDATE SUBJECT
 # -------------------------------
-@router.patch("/subjects/{subject_id}", response_model=SubjectResponse)
+@router.patch("/subjects/{subject_id}", response_model=SubjectResponse, tags=["Admin-Resources"])
 def update_subject(subject_id: UUID, data: SubjectUpdate, db: Session = Depends(get_db)):
 
     subject = db.query(models.Subject).filter(models.Subject.id == subject_id).first()
@@ -174,7 +174,7 @@ def update_subject(subject_id: UUID, data: SubjectUpdate, db: Session = Depends(
 # -------------------------------
 # UPDATE VIDEO RESOURCE
 # -------------------------------
-@router.patch("/videos/{video_id}", response_model=VideoResponse)
+@router.patch("/videos/{video_id}", response_model=VideoResponse, tags=["Admin-Resources"])
 def update_video(video_id: UUID, data: VideoUpdate, db: Session = Depends(get_db)):
 
     video = (
@@ -190,7 +190,7 @@ def update_video(video_id: UUID, data: VideoUpdate, db: Session = Depends(get_db
         video.title = data.title
 
     if data.playlist_url is not None:
-        video.playlist_url = data.playlist_url
+        video.playlist_url = str(data.playlist_url)
 
     if data.subject_id is not None:
         subject = (
@@ -211,7 +211,7 @@ def update_video(video_id: UUID, data: VideoUpdate, db: Session = Depends(get_db
 # -------------------------------
 # DELETE BRANCH
 # -------------------------------
-@router.delete("/branches/{branch_id}")
+@router.delete("/branches/{branch_id}", tags=["Admin-Resources"])
 def delete_branch(branch_id: UUID, db: Session = Depends(get_db)):
 
     branch = db.query(models.Branch).filter(
@@ -242,7 +242,7 @@ def delete_branch(branch_id: UUID, db: Session = Depends(get_db)):
 # -------------------------------
 # DELETE SUBJECT
 # -------------------------------
-@router.delete("/subjects/{subject_id}")
+@router.delete("/subjects/{subject_id}", tags=["Admin-Resources"])
 def delete_subject(subject_id: UUID, db: Session = Depends(get_db)):
 
     subject = db.query(models.Subject).filter(
@@ -272,7 +272,7 @@ def delete_subject(subject_id: UUID, db: Session = Depends(get_db)):
 # -------------------------------
 # DELETE VIDEO RESOURCE
 # -------------------------------
-@router.delete("/videos/{video_id}")
+@router.delete("/videos/{video_id}", tags=["Admin-Resources"])
 def delete_video(video_id: UUID, db: Session = Depends(get_db)):
 
     video = db.query(models.VideoResource).filter(
