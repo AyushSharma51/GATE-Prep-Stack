@@ -17,12 +17,12 @@
     --accent2: #0033cc;
     --yellow: #ffe234;
     --red: #e63329;
+    --green: #1a7a4a;
     --surface: #eeece8;
     --radius: 4px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -251,7 +251,7 @@
     display: block;
   }
 
-  select, input[type="text"] {
+  select, input[type="text"], input[type="number"] {
     width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -321,6 +321,7 @@
   }
 
   .btn-primary:hover { background: var(--accent2); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-secondary {
     display: inline-flex;
@@ -411,6 +412,20 @@
     background: #fdf0ef;
     border: 1px solid #f0aba6;
     color: var(--red);
+    padding: 11px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .msg-info {
+    background: #eef3ff;
+    border: 1px solid #aabfff;
+    color: var(--accent);
     padding: 11px 16px;
     border-radius: var(--radius);
     font-size: 13px;
@@ -635,7 +650,374 @@
     letter-spacing: 2px;
   }
 
+  /* ── AI TEST ── */
+  .ai-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 48px;
+    background: var(--white);
+  }
+
+  .ai-sidebar {
+    background: var(--ink2);
+    color: #fff;
+    padding: 36px 32px;
+    border-right: 1px solid #333;
+  }
+
+  .ai-sidebar-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 28px;
+  }
+
+  .ai-sidebar select,
+  .ai-sidebar input[type="number"] {
+    background-color: rgba(255,255,255,0.06);
+    background-image: none;
+    border-color: #333;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  .ai-sidebar select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px 12px;
+  }
+
+  .ai-sidebar select:focus,
+  .ai-sidebar input:focus {
+    border-color: var(--yellow);
+    background: rgba(255,255,255,0.1);
+    outline: none;
+  }
+
+  .ai-sidebar select option { background: #1a1a1a; color: #fff; }
+
+  .ai-sidebar input[type="number"] {
+    background-image: none;
+    padding-right: 16px;
+  }
+
+  /* test type toggle */
+  .test-type-toggle {
+    display: flex;
+    gap: 2px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid #333;
+    border-radius: var(--radius);
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+
+  .tt-btn {
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .tt-btn.active {
+    background: var(--yellow);
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .ai-main { padding: 36px 40px; }
+
+  /* question list */
+  .test-meta-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .test-meta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .test-meta-info {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .test-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 2px;
+    background: var(--ink);
+    color: var(--yellow);
+  }
+
+  .question-list { display: flex; flex-direction: column; gap: 20px; }
+
+  .q-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .q-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--muted);
+    line-height: 1;
+    min-width: 28px;
+  }
+
+  .q-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .q-section-badge {
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .q-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .q-option {
+    background: var(--white);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.12s;
+    border: none;
+    text-align: left;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .q-option:hover { background: var(--surface); }
+
+  .q-option.selected { background: #eef3ff; }
+  .q-option.correct  { background: #e8f5ef !important; }
+  .q-option.wrong    { background: #fdf0ef !important; }
+
+  .opt-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 18px;
+  }
+
+  .q-option.selected .opt-key { color: var(--accent); }
+  .q-option.correct  .opt-key { color: var(--green); }
+  .q-option.wrong    .opt-key { color: var(--red); }
+
+  /* timer */
+  .timer-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin-bottom: 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+  }
+
+  .timer-dot {
+    width: 7px; height: 7px;
+    background: var(--yellow);
+    border-radius: 50%;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .timer-bar.warning { background: var(--red); }
+  .timer-bar.warning .timer-dot { background: #fff; }
+
+  /* submit btn */
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .btn-submit:hover { background: #145e38; }
+
+  /* score card */
+  .score-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 24px;
+  }
+
+  .score-header {
+    background: var(--ink);
+    color: var(--yellow);
+    padding: 28px 32px;
+    text-align: center;
+  }
+
+  .score-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    line-height: 1;
+  }
+
+  .score-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .score-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-cell {
+    padding: 20px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat-cell:last-child { border-right: none; }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .stat-val.green { color: var(--green); }
+  .stat-val.red   { color: var(--red); }
+  .stat-val.muted { color: var(--muted); }
+
+  .stat-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* spinner */
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ai placeholder */
+  .ai-placeholder {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .ai-placeholder-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .ai-placeholder-text { font-size: 14px; color: var(--muted); }
+
   /* ── RESPONSIVE ── */
+  @media(max-width: 900px) {
+    .ai-grid { grid-template-columns: 1fr; }
+    .ai-sidebar { border-right: none; border-bottom: 1px solid #333; }
+    .q-options { grid-template-columns: 1fr; }
+    .score-stats { grid-template-columns: 1fr; }
+    .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
   @media(max-width: 768px) {
     nav { padding: 0 20px; }
     .hero { padding: 48px 20px 40px; }
@@ -656,6 +1038,7 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchTab('pyq')">Papers</button>
     <button class="nav-tab" onclick="switchTab('resources')">Resources</button>
+    <button class="nav-tab" onclick="switchTab('ai')">AI Test</button>
   </div>
   <span class="nav-tag">2024 Edition</span>
 </nav>
@@ -667,7 +1050,7 @@
     Your <span>exam prep</span><br>
     starts <em>here.</em>
   </h1>
-  <p class="hero-sub">Access previous year question papers and curated video resources for every GATE branch, all in one place.</p>
+  <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
   <div class="hero-pills">
     <span class="pill">CSE</span>
     <span class="pill">DA</span>
@@ -676,6 +1059,7 @@
     <span class="pill">CE</span>
     <span class="pill">ECE</span>
     <span class="pill">Free Access</span>
+    <span class="pill">AI Tests</span>
   </div>
 </div>
 
@@ -690,18 +1074,17 @@
     </div>
 
     <div class="pyq-grid">
-      <!-- Sidebar -->
       <div class="pyq-sidebar">
         <div class="pyq-sidebar-label">Configure Paper</div>
 
         <label class="field-label" style="color:#555">Branch</label>
         <select id="pyq-branch">
-          <option value="cse">Computer Science & Engg.</option>
-          <option value="da">Data Science & AI</option>
+          <option value="cse">Computer Science &amp; Engg.</option>
+          <option value="da">Data Science &amp; AI</option>
           <option value="me">Mechanical Engineering</option>
           <option value="ee">Electrical Engineering</option>
           <option value="ce">Civil Engineering</option>
-          <option value="ec">Electronics & Communication</option>
+          <option value="ec">Electronics &amp; Communication</option>
         </select>
 
         <label class="field-label" style="color:#555">Year</label>
@@ -714,7 +1097,6 @@
         <div id="pyq-msg"></div>
       </div>
 
-      <!-- Right panel -->
       <div class="pyq-main">
         <div class="pyq-result-area" id="pyq-result">
           <div class="pyq-placeholder">
@@ -736,7 +1118,7 @@
     </div>
 
     <div class="res-controls">
-      <div class="res-controls-label">Filter by Branch & Subject</div>
+      <div class="res-controls-label">Filter by Branch &amp; Subject</div>
       <div>
         <label class="field-label">Branch</label>
         <select id="res-branch" onchange="loadSubjects()">
@@ -751,6 +1133,8 @@
       </div>
     </div>
 
+    <div id="res-server-status"></div>
+
     <div id="videos-section">
       <div class="video-grid">
         <div class="empty-state">
@@ -761,6 +1145,74 @@
     </div>
   </div>
 
+  <!-- ── AI TEST ── -->
+  <div id="tab-ai" class="section">
+    <div class="section-header">
+      <span class="section-header-title">AI Mock Test</span>
+      <span class="section-header-num">03 / AI TEST</span>
+    </div>
+
+    <div class="ai-grid">
+      <!-- Sidebar -->
+      <div class="ai-sidebar">
+        <div class="ai-sidebar-label">Configure Test</div>
+
+        <label class="field-label" style="color:#555">Test Type</label>
+        <div class="test-type-toggle">
+          <button class="tt-btn active" id="tt-subject" onclick="setTestType('subject')">Subject</button>
+          <button class="tt-btn" id="tt-full" onclick="setTestType('full')">Full GATE</button>
+        </div>
+
+        <!-- Subject-specific fields -->
+        <div id="ai-subject-fields">
+          <label class="field-label" style="color:#555">Branch</label>
+          <select id="ai-branch" onchange="loadAISubjects()">
+            <option value="">Loading...</option>
+          </select>
+
+          <label class="field-label" style="color:#555">Subject</label>
+          <select id="ai-subject">
+            <option value="">Select branch first</option>
+          </select>
+
+          <label class="field-label" style="color:#555">Number of Questions</label>
+          <input type="number" id="ai-num-q" value="10" min="5" max="30" style="margin-bottom:20px;"/>
+        </div>
+
+        <!-- Full test branch selector -->
+        <div id="ai-full-fields" style="display:none;">
+          <label class="field-label" style="color:#555">Branch</label>
+          <select id="ai-branch-full">
+            <option value="">Loading...</option>
+          </select>
+          <p style="font-size:12px;color:#555;margin-bottom:20px;line-height:1.5;">
+            Generates a complete 65-question GATE mock test including General Aptitude.
+          </p>
+        </div>
+
+        <button class="btn-primary" id="ai-gen-btn" onclick="generateTest()" style="background:var(--yellow);color:var(--ink);font-weight:700;margin-top:4px;">
+          Generate Test →
+        </button>
+
+        <div id="ai-msg"></div>
+        <div id="ai-server-status"></div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="ai-main" id="ai-main-panel">
+        <div class="ai-placeholder">
+          <div>
+            <div class="ai-placeholder-icon">⚡</div>
+            <div class="ai-placeholder-text">Configure your test and click Generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test area (outside the grid, full width) -->
+    <div id="ai-test-area"></div>
+  </div>
+
 </main>
 
 <script>
@@ -768,16 +1220,37 @@
   let currentPaperUrl = null;
   let currentPaperName = null;
 
+  // ── AI TEST STATE ──
+  let currentTestType = 'subject';
+  let currentTest = null;          // { id, questions }
+  let userAnswers = {};            // { question_id: "A"|"B"|"C"|"D" }
+  let timerInterval = null;
+  let timeLeft = 0;
+  let testSubmitted = false;
+  let branchesCache = null;        // cache branches to avoid re-fetching
+
+  // ════════════════════════════════════════
+  //  TAB SWITCHING
+  // ════════════════════════════════════════
   function switchTab(tab) {
     document.querySelectorAll('.nav-tab').forEach((t, i) =>
-      t.classList.toggle('active', ['pyq','resources'][i] === tab));
+      t.classList.toggle('active', ['pyq','resources','ai'][i] === tab));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.add('active');
-    if (tab === 'resources' && document.getElementById('res-branch').options[0].value === '') {
+
+    // FIX: always load branches when switching to resources
+    if (tab === 'resources') {
       loadBranches();
+    }
+    // load AI branches when switching to ai tab
+    if (tab === 'ai') {
+      loadAIBranches();
     }
   }
 
+  // ════════════════════════════════════════
+  //  PYQ
+  // ════════════════════════════════════════
   async function fetchPaper() {
     const branch = document.getElementById('pyq-branch').value;
     const year   = document.getElementById('pyq-year').value.trim();
@@ -840,38 +1313,66 @@
     }
   }
 
-  async function loadBranches() {
+  // ════════════════════════════════════════
+  //  RESOURCES
+  // ════════════════════════════════════════
+  async function loadBranches(force = false) {
+    const sel = document.getElementById('res-branch');
+    const statusEl = document.getElementById('res-server-status');
+    if (!force && sel.options.length > 1 && sel.options[0].value !== '') return;
+
+    sel.innerHTML = '<option value="">Loading...</option>';
+    if (statusEl) statusEl.innerHTML = '';
     try {
-      const res = await fetch(`${BASE_URL}/resources/branches`);
+      const res = await fetch(`${BASE_URL}/resources/branches`, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const branches = await res.json();
-      const sel = document.getElementById('res-branch');
+      if (!branches.length) throw new Error('No branches returned');
       sel.innerHTML = branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+      branchesCache = branches;
       loadSubjects();
-    } catch {
-      document.getElementById('res-branch').innerHTML = '<option>Failed to load</option>';
+    } catch(e) {
+      sel.innerHTML = '<option value="">— retry after starting server —</option>';
+      if (statusEl) statusEl.innerHTML = `
+        <div class="msg-error" style="margin-top:12px;flex-wrap:wrap;gap:8px;">
+          <span>✕ Cannot reach server at <code style="font-size:11px;background:rgba(230,51,41,0.1);padding:2px 5px;border-radius:2px;">${BASE_URL}</code> — make sure your FastAPI server is running.</span>
+          <button onclick="loadBranches(true)" style="padding:5px 14px;border:1px solid var(--red);background:transparent;color:var(--red);border-radius:3px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap;">↻ Retry</button>
+        </div>`;
     }
   }
 
   async function loadSubjects() {
     const branchId = document.getElementById('res-branch').value;
     const subSel = document.getElementById('res-subject');
+    if (!branchId) {
+      subSel.innerHTML = '<option value="">Select branch first</option>';
+      return;
+    }
     subSel.innerHTML = '<option>Loading...</option>';
     showSkeleton();
     try {
       const res = await fetch(`${BASE_URL}/resources/subjects/${branchId}`);
+      if (!res.ok) throw new Error();
       const subjects = await res.json();
+      if (!subjects.length) {
+        subSel.innerHTML = '<option value="">No subjects found</option>';
+        document.getElementById('videos-section').innerHTML = `<div class="video-grid"><div class="empty-state"><div class="empty-icon">∅</div><div class="empty-text">No subjects for this branch</div></div></div>`;
+        return;
+      }
       subSel.innerHTML = subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
       loadVideos();
     } catch {
-      subSel.innerHTML = '<option>Error</option>';
+      subSel.innerHTML = '<option value="">Error loading subjects</option>';
     }
   }
 
   async function loadVideos() {
     const subjectId = document.getElementById('res-subject').value;
+    if (!subjectId) return;
     showSkeleton();
     try {
       const res = await fetch(`${BASE_URL}/resources/videos/${subjectId}`);
+      if (!res.ok) throw new Error();
       const videos = await res.json();
       const section = document.getElementById('videos-section');
       if (!videos?.length) {
@@ -926,6 +1427,315 @@
           <div class="skel-line1 skeleton"></div>
           <div class="skel-line2 skeleton"></div>
         </div>`).join('')}</div>`;
+  }
+
+  // ════════════════════════════════════════
+  //  AI TEST
+  // ════════════════════════════════════════
+  function setTestType(type) {
+    currentTestType = type;
+    document.getElementById('tt-subject').classList.toggle('active', type === 'subject');
+    document.getElementById('tt-full').classList.toggle('active', type === 'full');
+    document.getElementById('ai-subject-fields').style.display = type === 'subject' ? 'block' : 'none';
+    document.getElementById('ai-full-fields').style.display = type === 'full' ? 'block' : 'none';
+  }
+
+  async function loadAIBranches(force = false) {
+    const selSubject = document.getElementById('ai-branch');
+    const selFull = document.getElementById('ai-branch-full');
+    const statusEl = document.getElementById('ai-server-status');
+
+    if (!force && selSubject.options.length > 1 && selSubject.options[0].value !== '') return;
+
+    selSubject.innerHTML = '<option value="">Loading...</option>';
+    selFull.innerHTML = '<option value="">Loading...</option>';
+    if (statusEl) statusEl.innerHTML = '';
+    try {
+      const res = await fetch(`${BASE_URL}/resources/branches`, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const branches = await res.json();
+      if (!branches.length) throw new Error('empty');
+      const opts = branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+      selSubject.innerHTML = opts;
+      selFull.innerHTML = opts;
+      loadAISubjects();
+    } catch(e) {
+      selSubject.innerHTML = '<option value="">— retry after starting server —</option>';
+      selFull.innerHTML = '<option value="">— retry after starting server —</option>';
+      if (statusEl) statusEl.innerHTML = `
+        <div class="msg-error" style="margin-top:12px;flex-wrap:wrap;gap:8px;">
+          <span>✕ Server offline at <code style="font-size:11px;background:rgba(230,51,41,0.1);padding:2px 5px;border-radius:2px;">${BASE_URL}</code></span>
+          <button onclick="loadAIBranches(true)" style="padding:5px 14px;border:1px solid var(--red);background:transparent;color:var(--red);border-radius:3px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap;">↻ Retry</button>
+        </div>`;
+    }
+  }
+
+  async function loadAISubjects() {
+    const branchId = document.getElementById('ai-branch').value;
+    const subSel = document.getElementById('ai-subject');
+    if (!branchId) return;
+    subSel.innerHTML = '<option>Loading...</option>';
+    try {
+      const res = await fetch(`${BASE_URL}/resources/subjects/${branchId}`);
+      if (!res.ok) throw new Error();
+      const subjects = await res.json();
+      subSel.innerHTML = subjects.length
+        ? subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('')
+        : '<option value="">No subjects found</option>';
+    } catch {
+      subSel.innerHTML = '<option value="">Error</option>';
+    }
+  }
+
+  async function generateTest() {
+    const btn = document.getElementById('ai-gen-btn');
+    const msg = document.getElementById('ai-msg');
+    const panel = document.getElementById('ai-main-panel');
+
+    // Reset state
+    clearInterval(timerInterval);
+    userAnswers = {};
+    currentTest = null;
+    testSubmitted = false;
+    document.getElementById('ai-test-area').innerHTML = '';
+
+    let body = { test_type: currentTestType };
+
+    if (currentTestType === 'subject') {
+      const subjectId = document.getElementById('ai-subject').value;
+      const numQ = parseInt(document.getElementById('ai-num-q').value) || 10;
+      if (!subjectId) {
+        msg.innerHTML = '<div class="msg-error">⚠ Please select a subject</div>';
+        return;
+      }
+      body.subject_id = subjectId;
+      body.num_questions = numQ;
+    } else {
+      const branchId = document.getElementById('ai-branch-full').value;
+      if (!branchId) {
+        msg.innerHTML = '<div class="msg-error">⚠ Please select a branch</div>';
+        return;
+      }
+      body.branch_id = branchId;
+    }
+
+    // Loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    msg.innerHTML = '<div class="msg-info">⚡ AI is generating your test — this may take 15–30 seconds…</div>';
+    panel.innerHTML = `
+      <div class="ai-placeholder">
+        <div>
+          <div class="ai-placeholder-icon" style="animation: blink 1s infinite">⚡</div>
+          <div class="ai-placeholder-text">Building your personalised test…</div>
+        </div>
+      </div>`;
+
+    try {
+      const res = await fetch(`${BASE_URL}/resources/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || 'Server error');
+      }
+
+      currentTest = await res.json();
+
+      msg.innerHTML = '<div class="msg-success">✓ Test generated! Answer all questions and click Submit.</div>';
+      panel.innerHTML = `
+        <div>
+          <div class="test-meta-bar">
+            <div>
+              <div class="test-meta-title">${currentTestType === 'full' ? 'Full GATE Test' : 'Subject Test'}</div>
+              <div class="test-meta-info">${currentTest.questions.length} QUESTIONS · AI GENERATED</div>
+            </div>
+            <div class="test-badge">${currentTestType === 'full' ? '65 Qs · 3 hrs' : currentTest.questions.length + ' Qs'}</div>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+            The test is displayed below. Select your answers and submit when ready.
+          </p>
+        </div>`;
+
+      renderTest(currentTest);
+      startTimer(currentTestType === 'full' ? 180 : Math.ceil(currentTest.questions.length * 2));
+
+    } catch (e) {
+      msg.innerHTML = `<div class="msg-error">✕ ${e.message || 'Failed to generate test. Is your server running?'}</div>`;
+      panel.innerHTML = `
+        <div class="ai-placeholder">
+          <div>
+            <div class="ai-placeholder-icon">!</div>
+            <div class="ai-placeholder-text">Could not generate test</div>
+          </div>
+        </div>`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Generate Test →';
+    }
+  }
+
+  function renderTest(test) {
+    const area = document.getElementById('ai-test-area');
+    const qHtml = test.questions.map((q, i) => {
+      const opts = Object.entries(q.options).map(([key, val]) => `
+        <button class="q-option" id="opt-${q.id}-${key}" onclick="selectAnswer('${q.id}','${key}')">
+          <span class="opt-key">${key}</span>
+          <span>${val}</span>
+        </button>`).join('');
+
+      const sectionBadge = q.section
+        ? `<span class="q-section-badge">${q.section}</span>`
+        : '';
+
+      return `
+        <div class="q-card" id="qcard-${q.id}">
+          <div class="q-header">
+            <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+            <div class="q-text">${q.question_text}</div>
+            ${sectionBadge}
+          </div>
+          <div class="q-options">${opts}</div>
+        </div>`;
+    }).join('');
+
+    area.innerHTML = `
+      <div style="margin-top:24px;">
+        <div class="timer-bar" id="timer-bar">
+          <span class="timer-dot"></span>
+          <span id="timer-display">--:--</span>
+          <span style="color:#666;font-size:10px;letter-spacing:1px;margin-left:auto;">TIME REMAINING</span>
+        </div>
+        <div class="question-list" style="border:1px solid var(--border);border-top:none;padding:24px;background:var(--white);border-radius:0 0 var(--radius) var(--radius);">
+          ${qHtml}
+          <button class="btn-submit" onclick="submitTest()">Submit Test →</button>
+        </div>
+      </div>`;
+
+    area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function selectAnswer(questionId, key) {
+    if (testSubmitted) return;
+    userAnswers[questionId] = key;
+
+    // Update UI for this question
+    const q = currentTest.questions.find(q => q.id === questionId);
+    if (!q) return;
+    Object.keys(q.options).forEach(k => {
+      const el = document.getElementById(`opt-${questionId}-${k}`);
+      if (el) el.classList.toggle('selected', k === key);
+    });
+  }
+
+  function startTimer(minutes) {
+    clearInterval(timerInterval);
+    timeLeft = minutes * 60;
+
+    function tick() {
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      const display = document.getElementById('timer-display');
+      const bar = document.getElementById('timer-bar');
+      if (display) display.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if (bar) bar.classList.toggle('warning', timeLeft <= 300);
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        if (!testSubmitted) submitTest(true);
+      }
+      timeLeft--;
+    }
+
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  function submitTest(autoSubmit = false) {
+    if (testSubmitted) return;
+    testSubmitted = true;
+    clearInterval(timerInterval);
+
+    const questions = currentTest.questions;
+    let correct = 0, wrong = 0, unanswered = 0;
+
+    questions.forEach(q => {
+      const userAns = userAnswers[q.id];
+      const correctAns = q.correct_answer || q.answer; // handle both field names
+
+      // Highlight options
+      Object.keys(q.options).forEach(k => {
+        const el = document.getElementById(`opt-${q.id}-${k}`);
+        if (!el) return;
+        el.classList.remove('selected');
+        if (k === correctAns) el.classList.add('correct');
+        if (userAns && k === userAns && userAns !== correctAns) el.classList.add('wrong');
+      });
+
+      if (!userAns) unanswered++;
+      else if (userAns === correctAns) correct++;
+      else wrong++;
+    });
+
+    const pct = Math.round((correct / questions.length) * 100);
+
+    // Replace submit button with score card
+    const submitBtn = document.querySelector('.btn-submit');
+    if (submitBtn) {
+      submitBtn.outerHTML = `
+        <div class="score-card">
+          <div class="score-header">
+            ${autoSubmit ? '<div style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:2px;color:#888;margin-bottom:8px">TIME UP — AUTO SUBMITTED</div>' : ''}
+            <div class="score-num">${pct}%</div>
+            <div class="score-label">Final Score</div>
+          </div>
+          <div class="score-stats">
+            <div class="stat-cell">
+              <div class="stat-val green">${correct}</div>
+              <div class="stat-key">Correct</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val red">${wrong}</div>
+              <div class="stat-key">Wrong</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-val muted">${unanswered}</div>
+              <div class="stat-key">Skipped</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="resetAITest()" style="margin-top:16px;">
+          Generate New Test →
+        </button>`;
+    }
+
+    // Stop timer display
+    const bar = document.getElementById('timer-bar');
+    if (bar) {
+      bar.classList.remove('warning');
+      bar.style.background = '#1a7a4a';
+      const display = document.getElementById('timer-display');
+      if (display) display.textContent = 'DONE';
+    }
+  }
+
+  function resetAITest() {
+    clearInterval(timerInterval);
+    userAnswers = {};
+    currentTest = null;
+    testSubmitted = false;
+    document.getElementById('ai-test-area').innerHTML = '';
+    document.getElementById('ai-main-panel').innerHTML = `
+      <div class="ai-placeholder">
+        <div>
+          <div class="ai-placeholder-icon">⚡</div>
+          <div class="ai-placeholder-text">Configure your test and click Generate</div>
+        </div>
+      </div>`;
+    document.getElementById('ai-msg').innerHTML = '';
   }
 </script>
 </body>
