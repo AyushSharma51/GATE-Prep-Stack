@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 import os
-from ..schemas import GateBranch
+from ..schemas.enums import GateBranch
 
 router = APIRouter(tags=["Previous Year Question Papers"])
 

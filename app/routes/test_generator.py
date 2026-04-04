@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
-from app.database import get_db
+from ..database import get_db
 from app import db_models as models
 from ..ai_test_service import generate_mcqs
-from ..schemas import TestOut, GenerateTestRequest
+from ..schemas.tests import TestOut, GenerateTestRequest
 
 router = APIRouter(prefix="/resources", tags=["AI Tests"])
 
