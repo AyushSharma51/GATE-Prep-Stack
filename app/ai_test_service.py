@@ -54,26 +54,70 @@ def generate_mcqs(
             raise ValueError("subject_name required for subject test")
 
         prompt = f"""
-        Generate {num_questions} GATE-level MCQs for the subject: {subject_name}.
-        
-        OUTPUT FORMAT:
-        You must return a JSON object with a single key "questions" containing an array of objects.
-        
-        Example Structure:
+        Generate {num_questions} HIGH-QUALITY GATE-level questions for the subject: {subject_name}.
+
+        DIFFICULTY:
+        - Questions must be MODERATE to HARD level.
+        - Focus on conceptual understanding, numerical solving, and tricky logic.
+        - Avoid basic or definition-based questions.
+        - Prefer multi-step reasoning and problem-solving questions.
+
+        DISTRIBUTION:
+        - 50% MCQ (single correct)
+        - Remaining 50% split between MSQ and NAT
+        - Ensure MCQs are slightly more than others
+
+        QUESTION DESIGN:
+        - Inspired by previous year GATE questions (PYQs), but DO NOT copy them exactly
+        - Modify values, context, or framing to create new questions
+        - Maintain GATE exam style and depth
+
+        OUTPUT FORMAT (STRICT JSON ONLY):
         {{
-          "questions": [
+        "questions": [
             {{
-              "question": "The text of the question?",
-              "options": {{ "A": "opt1", "B": "opt2", "C": "opt3", "D": "opt4" }},
-              "answer": "A"
+            "question": "...",
+            "question_type": "mcq/msq/nat",
+            "marks": 1 or 2,
+
+            "options": {{
+                "A": "...",
+                "B": "...",
+                "C": "...",
+                "D": "..."
+            }},  # ONLY for mcq/msq (must be null for nat)
+
+            "answer": "A" OR ["A","C"] OR 12.5
             }}
-          ]
+        ]
         }}
 
-        STRICT RULES:
-        - Exactly 4 options (A, B, C, D).
-        - No markdown formatting (no ```json).
-        - High technical accuracy for Graduate Aptitude Test in Engineering (GATE).
+        -STRICT RULES:
+            - MCQ/MSQ must have EXACTLY 4 options
+            - Each question must include "marks": 1 or 2
+            - Maintain approximately equal number of 1-mark and 2-mark questions
+            - STRICT: Every MCQ/MSQ MUST have exactly 4 options
+            - Output must be valid JSON (no expressions)
+            - All numerical answers must be decimal numbers
+            - Do NOT use fractions like 1/2 or -1/6
+            - Convert all answers to float (e.g., 0.5, -0.1667
+
+        - MCQ:
+            - Exactly 4 options
+            - Only ONE correct answer (string)
+
+        - MSQ:
+            - Exactly 4 options
+            - One or more correct answers (list)
+
+        - NAT:
+            - No options (options must be null or omitted)
+            - Answer must be a number (int or float)
+        
+        - No explanations
+        - No markdown
+        - No extra text
+        - Return ONLY valid JSON
         """
 
     elif test_type == "full":
@@ -130,16 +174,26 @@ def generate_mcqs(
 
     for q in questions_list:
         # Check for mandatory keys
-        if not all(k in q for k in ["question", "options", "answer"]):
-            raise ValueError(
-                "A question is missing required fields (question/options/answer)."
-            )
+        if "question" not in q or "question_type" not in q:
+            raise ValueError("Missing required fields in question")
+
+        if q["question_type"] in ["mcq", "msq"]:
+            if "options" not in q or "answer" not in q:
+                raise ValueError("MCQ/MSQ must have options and answer")
+
+        if q["question_type"] == "nat":
+            if "answer" not in q:
+                raise ValueError("NAT must have numerical answer")
 
         # Check for 4 options
-        if len(q.get("options", {})) != 4:
-            raise ValueError(
-                f"Question '{q['question'][:30]}...' does not have exactly 4 options."
-            )
+        if q["question_type"] in ["mcq", "msq"]:
+            options = q.get("options")
+
+            if not options or len(options) != 4:
+                continue
+
+    for q in questions_list:
+        q["question_type"] = q["question_type"].lower()
 
     # --- 4. FINAL ASSEMBLY ---
     return {

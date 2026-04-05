@@ -1,8 +1,9 @@
 import uuid
-from sqlalchemy import Column, String, ForeignKey, Boolean
+from sqlalchemy import Column, Float, String, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import UUID  # Use this for Postgres-specific UUID
 from sqlalchemy.orm import relationship
 from .database import Base
+from enum import Enum 
 
 
 class Branch(Base):
@@ -44,20 +45,41 @@ class VideoResource(Base):
 
     subject = relationship("Subject", back_populates="videos")
 
+
+
+class QuestionType(str,Enum):
+    MCQ = "mcq"      # single correct
+    MSQ = "msq"      # multiple correct
+    NAT = "nat"      # numerical answer
+
+
 class Question(Base):
     __tablename__ = "questions"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     test_id = Column(UUID(as_uuid=True), ForeignKey("tests.id"), nullable=False)
+
     question_text = Column(String, nullable=False)
-    option_a = Column(String, nullable=False)
-    option_b = Column(String, nullable=False)
-    option_c = Column(String, nullable=False)
-    option_d = Column(String, nullable=False)
-    correct_option = Column(String, nullable=False)
+    question_type = Column(String, nullable=False)
+    marks = Column(Float, nullable=False)
+
+    # For NAT questions 
+    numerical_answer = Column(Float, nullable=True)
+    tolerance = Column(Float, nullable=True)  # optional (for range answers)
 
     test = relationship("Test", back_populates="questions")
+    options = relationship("Option", back_populates="question", cascade="all, delete")
 
+class Option(Base):
+    __tablename__ = "options"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    question_id = Column(UUID(as_uuid=True), ForeignKey("questions.id"), nullable=False)
+
+    option_text = Column(String, nullable=False)
+    is_correct = Column(Boolean, default=False)
+
+    question = relationship("Question", back_populates="options")
 
 class Test(Base):
     __tablename__ = "tests"
