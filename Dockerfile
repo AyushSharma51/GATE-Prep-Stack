@@ -3,13 +3,13 @@ FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
-# Install Poetry
-RUN pip install --no-cache-dir poetry
+# Install Poetry + export plugin
+RUN pip install --no-cache-dir poetry poetry-plugin-export
 
 # Copy dependency files
 COPY pyproject.toml poetry.lock ./
 
-# Export dependencies to requirements.txt (no dev deps)
+# Export dependencies to requirements.txt
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes --only main
 
 # ---- Final Stage ----
