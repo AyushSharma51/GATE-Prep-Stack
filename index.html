@@ -78,31 +78,34 @@
 
     .nav-tabs {
       display: flex;
-      gap: 2px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 3px;
+      gap: 0;
+      background: var(--ink);
+      border: 1.5px solid var(--ink);
+      border-radius: 6px;
+      padding: 4px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     }
 
     .nav-tab {
       padding: 7px 20px;
       border: none;
       background: transparent;
-      color: var(--muted);
+      color: #aaa;
       font-family: 'Instrument Sans', sans-serif;
       font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       cursor: pointer;
-      border-radius: 2px;
+      border-radius: 4px;
       transition: all 0.15s ease;
     }
 
     .nav-tab.active {
-      background: var(--ink);
-      color: var(--yellow);
+      background: var(--yellow);
+      color: var(--ink);
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
 
     .nav-tag {
@@ -136,6 +139,7 @@
       pointer-events: none;
       user-select: none;
     }
+    
 
     .hero-label {
       font-family: 'Space Mono', monospace;
@@ -285,10 +289,8 @@
     }
 
     select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 40px;
+      background-image: none;
+      padding-right: 16px;
     }
 
     select:focus,
@@ -306,7 +308,7 @@
     }
 
     .pyq-sidebar select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-image: none,
     }
 
     .pyq-sidebar select:focus,
@@ -1324,6 +1326,12 @@
         padding: 0 20px;
       }
 
+      .nav-logo {
+        font-size: 18px;
+        letter-spacing: 1px;
+        font-weight: 900;
+      }
+
       .hero {
         padding: 48px 20px 40px;
       }
@@ -1358,11 +1366,15 @@
       <button class="nav-tab" onclick="switchTab('resources')">Resources</button>
       <button class="nav-tab" onclick="switchTab('ai')">AI Test</button>
     </div>
-    <span class="nav-tag">2024 Edition</span>
+    <span class="nav-tag">2026 Edition</span>
   </nav>
 
   <!-- HERO -->
+<!-- HERO -->
   <div class="hero">
+    <!-- floating image cards -->
+
+
     <div class="hero-label">Graduate Aptitude Test in Engineering</div>
     <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
     <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for
@@ -1386,7 +1398,7 @@
         <div class="pyq-sidebar">
           <div class="pyq-sidebar-label">Configure Paper</div>
           <label class="field-label" style="color:#555">Branch</label>
-          <select id="pyq-branch">
+          <select id="pyq-branch" onchange="updateYearDropdown()">
             <option value="cse">Computer Science &amp; Engg.</option>
             <option value="da">Data Science &amp; AI</option>
             <option value="me">Mechanical Engineering</option>
@@ -1395,7 +1407,17 @@
             <option value="ec">Electronics &amp; Communication</option>
           </select>
           <label class="field-label" style="color:#555">Year</label>
-          <input type="text" id="pyq-year" placeholder="e.g. 2010 or 2023-1 (For Exam with Shifts)" maxlength="4" />
+          <select id="pyq-year" onchange="updateShiftDropdown()">
+            <option value="">Loading...</option>
+          </select>
+          <div id="shift-wrapper" style="display:none;">
+            <label class="field-label" style="color:#555">Shift</label>
+            <select id="pyq-shift">
+              <option value="">No Shift (Single Paper)</option>
+              <option value="-1">Shift 1</option>
+              <option value="-2">Shift 2</option>
+            </select>
+          </div>
           <button class="btn-primary" onclick="fetchPaper()"
             style="background:var(--yellow);color:var(--ink);font-weight:700;margin-top:4px;">Search Paper →</button>
           <div id="pyq-msg"></div>
@@ -1527,14 +1549,67 @@
     // ════════════════════════════════════════
     //  PYQ
     // ════════════════════════════════════════
+    const BRANCH_YEARS = {
+      cse: { 
+        years: ['2025-2','2025-1','2024-2','2024-1','2023','2022','2021-2','2021-1','2020','2019','2018','2017-2','2017-1','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007'], 
+        shifts: ['2025','2024','2021','2017'] 
+      },
+      da: { 
+        years: ['2025','2024'], 
+        shifts: [] 
+      },
+      me: { 
+        years: ['2025','2024','2023','2022-2','2022-1','2021-2','2021-1','2020-2','2020-1','2019-2','2019-1','2018-2','2018-1','2017-2','2017-1','2016','2015','2014','2013','2012','2011','2010','2009','2008','2007'], 
+        shifts: ['2022','2021','2020','2019','2018','2017'] 
+      },
+      ee:  { years: [], shifts: [] },
+      ce:  { years: [], shifts: [] },
+      ec:  { years: [], shifts: [] },
+    };
+
+    function updateYearDropdown() {
+      const branch = document.getElementById('pyq-branch').value;
+      const yearSel = document.getElementById('pyq-year');
+      const shiftWrapper = document.getElementById('shift-wrapper');
+
+      const config = BRANCH_YEARS[branch];
+      if (!config) return;
+
+      yearSel.innerHTML = '<option value="">Select Year</option>' +
+        config.years.map(y => `<option value="${y}">${y}</option>`).join('');
+
+      yearSel.dataset.shiftYears = JSON.stringify(config.shifts || []);
+      shiftWrapper.style.display = 'none';
+      document.getElementById('pyq-shift').value = '';
+    }
+
+    function updateShiftDropdown() {
+      const yearSel = document.getElementById('pyq-year');
+      const year = yearSel.value;
+      const shiftYears = JSON.parse(yearSel.dataset.shiftYears || '[]');
+      const wrapper = document.getElementById('shift-wrapper');
+
+      if (year && shiftYears.includes(year)) {
+        wrapper.style.display = 'block';
+        document.getElementById('pyq-shift').value = '';
+      } else {
+        wrapper.style.display = 'none';
+        document.getElementById('pyq-shift').value = '';
+      }
+    }
+
+
+
     async function fetchPaper() {
       const branch = document.getElementById('pyq-branch').value;
-      const year = document.getElementById('pyq-year').value.trim();
+      const yearBase = document.getElementById('pyq-year').value;
+      const shift = document.getElementById('pyq-shift')?.value || '';
+      const year = yearBase + shift;  // gives "2025", "2025-1", or "2025-2"
       const msg = document.getElementById('pyq-msg');
       const result = document.getElementById('pyq-result');
 
-      if (!year || year.length !== 4 || isNaN(year)) {
-        msg.innerHTML = '<div class="msg-error">⚠ Enter a valid 4-digit year</div>';
+      if (!yearBase) {
+        msg.innerHTML = '<div class="msg-error">⚠ Please select a year</div>';
         return;
       }
 
@@ -1581,18 +1656,7 @@
 
     function viewPaper() {
       if (!currentPaperUrl) return;
-
-      const viewer = document.getElementById('pyq-viewer');
-
-      const pdfViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(currentPaperUrl)}`;
-
-      viewer.innerHTML = `
-        <div class="pdf-frame">
-          <iframe src="${pdfViewerUrl}" width="100%" height="600px"></iframe>
-        </div>
-      `;
-
-      viewer.scrollIntoView({ behavior: 'smooth' });
+      window.open(currentPaperUrl, '_blank');
     }
 
     async function downloadPaper(event) {
@@ -1664,21 +1728,67 @@
       } catch { subSel.innerHTML = '<option value="">Error loading subjects</option>'; }
     }
 
+    function getPlaylistThumbnail(listId) {
+      return new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = `https://www.youtube.com/embed/videoseries?list=${listId}`;
+
+        iframe.onload = () => {
+          try {
+            const url = iframe.contentWindow.location.href;
+            const vidMatch = url.match(/v=([^&]+)/);
+
+            if (vidMatch) {
+              resolve(`https://img.youtube.com/vi/${vidMatch[1]}/hqdefault.jpg`);
+            } else {
+              resolve(null);
+            }
+          } catch {
+            resolve(null);
+          }
+          iframe.remove();
+        };
+
+        document.body.appendChild(iframe);
+      });
+    }
+
     async function loadVideos() {
       const subjectId = document.getElementById('res-subject').value;
       if (!subjectId) return;
+
       showSkeleton();
+
       try {
         const res = await fetch(`${BASE_URL}/resources/videos/${subjectId}`);
         if (!res.ok) throw new Error();
+
         const videos = await res.json();
         const section = document.getElementById('videos-section');
+
         if (!videos?.length) {
-          section.innerHTML = `<div class="video-grid"><div class="empty-state"><div class="empty-icon">∅</div><div class="empty-text">No videos found for this subject</div></div></div>`; return;
+          section.innerHTML = `
+            <div class="video-grid">
+              <div class="empty-state">
+                <div class="empty-icon">∅</div>
+                <div class="empty-text">No videos found for this subject</div>
+              </div>
+            </div>`;
+          return;
         }
-        section.innerHTML = `<div class="video-grid">${videos.map(videoCard).join('')}</div>`;
+
+        // ✅ THIS IS THE FIX
+        await renderVideos(videos);
+
       } catch {
-        document.getElementById('videos-section').innerHTML = `<div class="video-grid"><div class="empty-state"><div class="empty-icon">!</div><div class="empty-text">Could not load videos</div></div></div>`;
+        document.getElementById('videos-section').innerHTML = `
+          <div class="video-grid">
+            <div class="empty-state">
+              <div class="empty-icon">!</div>
+              <div class="empty-text">Could not load videos</div>
+            </div>
+          </div>`;
       }
     }
 
@@ -1689,24 +1799,81 @@
       return null;
     }
 
+    async function prepareVideos(videos) {
+      for (let v of videos) {
+        const url = v.playlist_url;
+
+        let videoId = null;
+
+        // Case 1: Normal video
+        if (url.includes('watch?v=')) {
+          videoId = url.split('v=')[1].split('&')[0];
+        }
+
+        // Case 2: Short link
+        else if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        }
+
+        // Case 3: Playlist ONLY → 🔥 FIX
+        else if (url.includes('list=')) {
+          const listId = url.split('list=')[1].split('&')[0];
+
+          // 👇 KEY TRICK (WORKS)
+          videoId = await getFirstVideoFromPlaylist(listId);
+        }
+
+        // assign thumbnail
+        if (videoId) {
+          v.thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        } else {
+          v.thumb = null;
+        }
+      }
+
+      return videos;
+    }
+
+    async function getFirstVideoFromPlaylist(listId) {
+      try {
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${listId}&format=json`);
+        const data = await res.json();
+
+        // extract video id from thumbnail URL
+        const match = data.thumbnail_url.match(/vi\/([^/]+)/);
+
+        return match ? match[1] : null;
+
+      } catch (e) {
+        console.log("playlist fetch failed", e);
+        return null;
+      }
+    }
+
+    async function renderVideos(videos) {
+      showSkeleton();
+
+      const prepared = await prepareVideos(videos);
+
+      document.getElementById('videos-section').innerHTML =
+        `<div class="video-grid">
+          ${prepared.map(videoCard).join('')}
+        </div>`;
+    }
     function videoCard(v) {
-      const url = v.playlist_url;
-      const vid = getVideoId(url);
-      const thumb = vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : null;
-      const isPl = url.includes('list=');
       return `
-        <a class="video-card" href="${url}" target="_blank" rel="noopener">
+        <a class="video-card" href="${v.playlist_url}" target="_blank">
           <div class="thumb-wrap">
-            ${thumb ? `<img src="${thumb}" alt="${v.title}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=thumb-fallback>▶</div>'">` : `<div class="thumb-fallback">▶</div>`}
-            <div class="play-overlay"><div class="play-btn-circle"><svg width="18" height="18" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
-            ${isPl ? '<div class="playlist-badge">Playlist</div>' : ''}
+            ${v.thumb 
+              ? `<img src="${v.thumb}" alt="${v.title}">`
+              : `<div class="thumb-fallback">▶</div>`}
           </div>
           <div class="video-info">
             <div class="video-title">${v.title}</div>
-            <div class="video-meta">YouTube · ${isPl ? 'Playlist' : 'Video'}</div>
           </div>
         </a>`;
     }
+
 
     function showSkeleton() {
       document.getElementById('videos-section').innerHTML =
@@ -1820,7 +1987,7 @@
 
         renderTest(currentTest);
         startTimer(currentTestType === 'full' ? 180 : Math.ceil(currentTest.questions.length * 2));
-        testStartTime = Date.now();   // ✅ record start time
+        testStartTime = Date.now();   //  record start time
 
       } catch (e) {
         msg.innerHTML = `<div class="msg-error">✕ ${e.message || 'Failed to generate test. Is your server running?'}</div>`;
@@ -2112,6 +2279,10 @@
         </div></div>`;
       document.getElementById('ai-msg').innerHTML = '';
     }
+        
+    document.addEventListener('DOMContentLoaded', () => {
+      updateYearDropdown();
+    });
   </script>
 </body>
 
