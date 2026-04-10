@@ -1,19 +1,33 @@
-FROM python:3.12
+# ---- Builder Stage ----
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
 # Install Poetry
-RUN pip install poetry
+RUN pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml poetry.lock ./
 
-# Install dependencies (NEW syntax)
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-root
+# Export dependencies to requirements.txt (no dev deps)
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes --only main
 
-# Copy full project
-COPY . /app/
+# ---- Final Stage ----
+FROM python:3.12-slim AS final
 
-# Run FastAPI
+WORKDIR /app
+
+# Install dependencies directly with pip (no Poetry overhead)
+COPY --from=builder /app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy only the app source
+COPY app/ ./app/
+
+# Non-root user for security
+RUN useradd -m appuser
+USER appuser
+
+EXPOSE 8000
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
