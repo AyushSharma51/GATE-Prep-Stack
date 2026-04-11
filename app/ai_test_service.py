@@ -127,12 +127,93 @@ def generate_mcqs(
         # NOTE: Generating 65 questions in one API call may hit token limits.
         # If this fails, consider reducing the count or batching.
         prompt = f"""
-        Generate a full-length GATE mock test for {branch_name}.
-        Include 10 General Aptitude and 55 Core Engineering questions.
-        
-        OUTPUT FORMAT:
-        Return a JSON object: {{"questions": [...]}}
-        Each question must include a "section" key (either "aptitude" or "core").
+        Generate a FULL-LENGTH, HIGH-QUALITY GATE mock test for the branch: {branch_name}.
+
+        TOTAL QUESTIONS:
+        - 65 Questions in total:
+            - 10 General Aptitude (GA)
+            - 55 Core Engineering (from full syllabus)
+
+        DIFFICULTY:
+        - Overall paper should match actual GATE level (MODERATE to HARD)
+        - Include a balanced mix:
+            - Conceptual questions
+            - Numerical/problem-solving questions
+            - Multi-step reasoning
+            - Tricky and application-based questions
+        - Avoid basic theory/definition-only questions
+
+        SECTION DISTRIBUTION:
+        - General Aptitude (10 Questions):
+            - Mix of verbal ability, logical reasoning, and numerical aptitude
+        - Core Engineering (55 Questions):
+            - Cover the FULL syllabus with proper topic distribution
+            - Avoid over-concentration on a single topic
+
+        QUESTION TYPE DISTRIBUTION (OVERALL):
+        - 50% MCQ (single correct)
+        - Remaining 50% split between MSQ and NAT
+        - MCQs should be slightly more than MSQ and NAT individually
+
+        MARKS DISTRIBUTION:
+        - Follow GATE pattern:
+            - Mix of 1-mark and 2-mark questions
+            - Approximately equal distribution
+            - Total marks ≈ 100
+
+        QUESTION DESIGN:
+        - Inspired by previous year GATE questions (PYQs), but DO NOT copy
+        - Modify values, logic, or context to create original questions
+        - Maintain authentic GATE exam style and depth
+
+        OUTPUT FORMAT (STRICT JSON ONLY):
+        {{
+        "questions": [
+            {{
+            "section": "aptitude/core",
+            "question": "...",
+            "question_type": "mcq/msq/nat",
+            "marks": 1 or 2,
+
+            "options": {{
+                "A": "...",
+                "B": "...",
+                "C": "...",
+                "D": "..."
+            }},  # ONLY for mcq/msq (must be null for nat)
+
+            "answer": "A" OR ["A","C"] OR 12.5
+            }}
+        ]
+        }}
+
+        STRICT RULES:
+        - Each question MUST include "section" ("aptitude" or "core")
+        - MCQ/MSQ must have EXACTLY 4 options
+        - NAT must have options = null or omitted
+        - Each question must include "marks": 1 or 2
+        - Maintain near equal number of 1-mark and 2-mark questions
+        - Output must be valid JSON ONLY (no extra text, no markdown)
+        - All numerical answers must be in decimal format
+            - Convert fractions (e.g., 1/2 → 0.5, -1/6 → -0.1667)
+        - NO explanations
+        - NO duplicate questions
+        - Ensure variety and coverage across topics
+
+        MCQ:
+        - Exactly 4 options
+        - Only ONE correct answer (string)
+
+        MSQ:
+        - Exactly 4 options
+        - One or more correct answers (list)
+
+        NAT:
+        - No options
+        - Answer must be a number (int or float)
+
+        FINAL INSTRUCTION:
+        - Return ONLY valid JSON
         """
     else:
         raise ValueError("Invalid test_type")
