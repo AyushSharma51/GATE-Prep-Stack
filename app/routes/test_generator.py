@@ -66,7 +66,10 @@ def generate_test(data: GenerateTestRequest, db: Session = Depends(get_db)):
         raise HTTPException(400, "Invalid test_type")
 
     # CREATE TEST ENTRY IN DATABASE
-    test = models.Test(subject_id=data.subject_id)
+    test = models.Test(
+        subject_id=data.subject_id if data.test_type == "subject" else None,
+        branch_id=data.branch_id if data.test_type == "full" else None,
+    )
     db.add(test)
     db.flush()  # Get test.id before committing
 

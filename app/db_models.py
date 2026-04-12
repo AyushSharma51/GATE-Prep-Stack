@@ -85,6 +85,7 @@ class Test(Base):
     __tablename__ = "tests"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    subject_id = Column(UUID(as_uuid=True), ForeignKey("subjects.id"), nullable=False)
+    subject_id = Column(UUID(as_uuid=True), ForeignKey("subjects.id"), nullable=True)  
+    branch_id = Column(UUID(as_uuid=True), ForeignKey("branches.id"), nullable=True)   
 
     questions = relationship("Question", back_populates="test", cascade="all, delete")

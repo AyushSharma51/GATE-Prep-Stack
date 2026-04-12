@@ -6,9 +6,6 @@ from openai import OpenAI
 def get_client():
     """
     Initializes and returns an OpenAI-compatible client using Groq API.
-
-    The Groq API uses the OpenAI SDK, making it easy to swap models.
-    We point the base_url to Groq's endpoint.
     """
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
@@ -18,17 +15,52 @@ def get_client():
 
 
 def get_time_limit(num_questions: int, test_type: str):
-    """
-    Calculates the duration of the test in minutes.
-
-    - Full Mock Tests are standard 180 minutes.
-    - Subject tests use a heuristic of ~2 minutes per question.
-    """
     if test_type == "full":
         return 180
-
     mapping = {10: 20, 15: 30, 20: 40}
     return mapping.get(num_questions, 30)
+
+
+def validate_questions(questions_list):
+    """Filter out malformed questions."""
+    valid = []
+    for q in questions_list:
+        if "question" not in q or "question_type" not in q:
+            continue
+        q["question_type"] = q["question_type"].lower()
+        if q["question_type"] in ["mcq", "msq"]:
+            if "options" not in q or "answer" not in q:
+                continue
+            if not q.get("options") or len(q["options"]) != 4:
+                continue
+        if q["question_type"] == "nat":
+            if "answer" not in q:
+                continue
+        valid.append(q)
+    return valid
+
+
+def call_llm(client, prompt):
+    """Single LLM call — returns validated question list."""
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a specialized GATE exam generator that only outputs valid JSON.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.4,
+        response_format={"type": "json_object"},
+    )
+    content = response.choices[0].message.content.strip()
+    try:
+        raw_data = json.loads(content)
+        questions_list = raw_data.get("questions", []) if isinstance(raw_data, dict) else []
+    except json.JSONDecodeError:
+        return []
+    return validate_questions(questions_list)
 
 
 def generate_mcqs(
@@ -37,15 +69,6 @@ def generate_mcqs(
     test_type: str = "subject",
     num_questions: int = 10,
 ):
-    """
-    Generates GATE-level MCQs using the Groq Llama-3 model.
-
-    FIX APPLIED:
-    When using response_format={"type": "json_object"}, the LLM MUST return
-    a dictionary (object) starting with '{'. We now instruct the AI to wrap
-    the questions inside a "questions" key.
-    """
-
     client = get_client()
 
     # --- 1. PROMPT CONSTRUCTION ---
@@ -120,19 +143,18 @@ def generate_mcqs(
         - Return ONLY valid JSON
         """
 
+        # --- 2. API CALL (subject) ---
+        valid_questions = call_llm(client, prompt)
+
     elif test_type == "full":
         if not branch_name:
             raise ValueError("branch_name required for full test")
 
-        # NOTE: Generating 65 questions in one API call may hit token limits.
-        # If this fails, consider reducing the count or batching.
-        prompt = f"""
+        ga_prompt = f"""
         Generate a FULL-LENGTH, HIGH-QUALITY GATE mock test for the branch: {branch_name}.
 
         TOTAL QUESTIONS:
-        - 65 Questions in total:
-            - 10 General Aptitude (GA)
-            - 55 Core Engineering (from full syllabus)
+        - 10 General Aptitude (GA) questions ONLY. NO Core Engineering questions.
 
         DIFFICULTY:
         - Overall paper should match actual GATE level (MODERATE to HARD)
@@ -146,9 +168,6 @@ def generate_mcqs(
         SECTION DISTRIBUTION:
         - General Aptitude (10 Questions):
             - Mix of verbal ability, logical reasoning, and numerical aptitude
-        - Core Engineering (55 Questions):
-            - Cover the FULL syllabus with proper topic distribution
-            - Avoid over-concentration on a single topic
 
         QUESTION TYPE DISTRIBUTION (OVERALL):
         - 50% MCQ (single correct)
@@ -159,7 +178,6 @@ def generate_mcqs(
         - Follow GATE pattern:
             - Mix of 1-mark and 2-mark questions
             - Approximately equal distribution
-            - Total marks ≈ 100
 
         QUESTION DESIGN:
         - Inspired by previous year GATE questions (PYQs), but DO NOT copy
@@ -170,7 +188,7 @@ def generate_mcqs(
         {{
         "questions": [
             {{
-            "section": "aptitude/core",
+            "section": "aptitude",
             "question": "...",
             "question_type": "mcq/msq/nat",
             "marks": 1 or 2,
@@ -188,7 +206,89 @@ def generate_mcqs(
         }}
 
         STRICT RULES:
-        - Each question MUST include "section" ("aptitude" or "core")
+        - Each question MUST include "section": "aptitude"
+        - MCQ/MSQ must have EXACTLY 4 options
+        - NAT must have options = null or omitted
+        - Each question must include "marks": 1 or 2
+        - Maintain near equal number of 1-mark and 2-mark questions
+        - Output must be valid JSON ONLY (no extra text, no markdown)
+        - All numerical answers must be in decimal format
+            - Convert fractions (e.g., 1/2 → 0.5, -1/6 → -0.1667)
+        - NO explanations
+        - NO duplicate questions
+
+        MCQ:
+        - Exactly 4 options
+        - Only ONE correct answer (string)
+
+        MSQ:
+        - Exactly 4 options
+        - One or more correct answers (list)
+
+        NAT:
+        - No options
+        - Answer must be a number (int or float)
+
+        FINAL INSTRUCTION:
+        - Return ONLY valid JSON
+        """
+
+        core_prompt = f"""
+        Generate a FULL-LENGTH, HIGH-QUALITY GATE mock test for the branch: {branch_name}.
+
+        TOTAL QUESTIONS:
+        - 55 Core Engineering questions ONLY. NO General Aptitude questions.
+        - Cover the FULL syllabus with proper topic distribution
+        - Avoid over-concentration on a single topic
+
+        DIFFICULTY:
+        - Overall paper should match actual GATE level (MODERATE to HARD)
+        - Include a balanced mix:
+            - Conceptual questions
+            - Numerical/problem-solving questions
+            - Multi-step reasoning
+            - Tricky and application-based questions
+        - Avoid basic theory/definition-only questions
+
+        QUESTION TYPE DISTRIBUTION (OVERALL):
+        - 50% MCQ (single correct)
+        - Remaining 50% split between MSQ and NAT
+        - MCQs should be slightly more than MSQ and NAT individually
+
+        MARKS DISTRIBUTION:
+        - Follow GATE pattern:
+            - Mix of 1-mark and 2-mark questions
+            - Approximately equal distribution
+            - Total marks ≈ 90
+
+        QUESTION DESIGN:
+        - Inspired by previous year GATE questions (PYQs), but DO NOT copy
+        - Modify values, logic, or context to create original questions
+        - Maintain authentic GATE exam style and depth
+
+        OUTPUT FORMAT (STRICT JSON ONLY):
+        {{
+        "questions": [
+            {{
+            "section": "core",
+            "question": "...",
+            "question_type": "mcq/msq/nat",
+            "marks": 1 or 2,
+
+            "options": {{
+                "A": "...",
+                "B": "...",
+                "C": "...",
+                "D": "..."
+            }},  # ONLY for mcq/msq (must be null for nat)
+
+            "answer": "A" OR ["A","C"] OR 12.5
+            }}
+        ]
+        }}
+
+        STRICT RULES:
+        - Each question MUST include "section": "core"
         - MCQ/MSQ must have EXACTLY 4 options
         - NAT must have options = null or omitted
         - Each question must include "marks": 1 or 2
@@ -215,71 +315,27 @@ def generate_mcqs(
         FINAL INSTRUCTION:
         - Return ONLY valid JSON
         """
+
+        # --- 2. API CALL (full — two separate calls, then merge) ---
+        ga_questions = call_llm(client, ga_prompt)
+        core_questions = call_llm(client, core_prompt)
+        valid_questions = ga_questions + core_questions
+
     else:
         raise ValueError("Invalid test_type")
 
-    # --- 2. API CALL ---
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a specialized GATE exam generator that only outputs valid JSON.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.4,  # Lower temperature for more factual/structured output
-        response_format={"type": "json_object"},
-    )
-
-    content = response.choices[0].message.content.strip()
-
-    # --- 3. DATA PARSING & VALIDATION ---
-    try:
-        # Step A: Parse the raw string into a Python Dictionary
-        raw_data = json.loads(content)
-
-        # Step B: Extract the list from the "questions" wrapper
-        if "questions" in raw_data:
-            questions_list = raw_data["questions"]
-        else:
-            # Fallback if AI ignored the key and returned a list directly
-            questions_list = raw_data if isinstance(raw_data, list) else []
-
-    except json.JSONDecodeError:
-        raise ValueError("AI failed to return valid JSON.")
-
-    # Step C: Deep validation of question structure
-    if not isinstance(questions_list, list) or len(questions_list) == 0:
-        raise ValueError("AI returned an empty or invalid question list.")
-
-    for q in questions_list:
-        # Check for mandatory keys
-        if "question" not in q or "question_type" not in q:
-            raise ValueError("Missing required fields in question")
-
-        if q["question_type"] in ["mcq", "msq"]:
-            if "options" not in q or "answer" not in q:
-                raise ValueError("MCQ/MSQ must have options and answer")
-
-        if q["question_type"] == "nat":
-            if "answer" not in q:
-                raise ValueError("NAT must have numerical answer")
-
-        # Check for 4 options
-        if q["question_type"] in ["mcq", "msq"]:
-            options = q.get("options")
-
-            if not options or len(options) != 4:
-                continue
-
-    for q in questions_list:
-        q["question_type"] = q["question_type"].lower()
+    # --- 3. FINAL CHECK ---
+    min_required = 10 if test_type == "subject" else 30
+    if len(valid_questions) < min_required:
+        raise ValueError(
+            f"AI returned too few valid questions ({len(valid_questions)}). "
+            f"Expected at least {min_required}. Please try again."
+        )
 
     # --- 4. FINAL ASSEMBLY ---
     return {
-        "questions": questions_list,
+        "questions": valid_questions,
         "time_limit": get_time_limit(num_questions, test_type),
         "test_type": test_type,
-        "total_count": len(questions_list),
+        "total_count": len(valid_questions),
     }
