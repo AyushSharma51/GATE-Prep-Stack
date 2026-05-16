@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, Float, String, ForeignKey, Boolean
+from sqlalchemy import Column, DateTime, Float, String, ForeignKey, Boolean, func
 from sqlalchemy.dialects.postgresql import UUID  # Use this for Postgres-specific UUID
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -85,7 +85,25 @@ class Test(Base):
     __tablename__ = "tests"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    subject_id = Column(UUID(as_uuid=True), ForeignKey("subjects.id"), nullable=True)  
+    subject_id = Column(UUID(as_uuid=True), ForeignKey("subjects.id"), nullable=True)  # ← False to True
     branch_id = Column(UUID(as_uuid=True), ForeignKey("branches.id"), nullable=True)   
 
     questions = relationship("Question", back_populates="test", cascade="all, delete")
+
+
+class Update(Base):
+    __tablename__ = "updates"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+
+    title = Column(String, nullable=False)
+
+    source = Column(String, nullable=False)
+
+    source_url = Column(String, nullable=False)
+
+    published_at = Column(DateTime(timezone=True), nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    is_deleted = Column(Boolean, default=False)
