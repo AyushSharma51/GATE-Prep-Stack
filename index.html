@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GATE Prep Hub</title>
+  <title>GATEVerse</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -726,6 +726,16 @@
     [data-theme="dark"] .ai-sidebar select option {
       background: #111;
     }
+
+    /* ── UPDATES ── */
+    .updates-list { display: flex; flex-direction: column; gap: 0; margin-top: 40px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .update-item { background: var(--card-bg); padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 14px; transition: background 0.15s; }
+    .update-item:last-child { border-bottom: none; }
+    .update-item:hover { background: var(--surface); }
+    .update-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+    .update-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+    .update-source { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
+
   </style>
 </head>
 <body>
@@ -739,6 +749,7 @@
         <button class="nav-tab active" onclick="switchTab('pyq')">Papers</button>
         <button class="nav-tab" onclick="switchTab('resources')">Resources</button>
         <button class="nav-tab" onclick="switchTab('ai')">AI Test</button>
+        <button class="nav-tab" onclick="switchTab('updates')">Updates</button>
       </div>
     </div>
 
@@ -851,7 +862,7 @@
     <!-- ── AI TEST ── -->
     <div id="tab-ai" class="section">
       <div class="section-header">
-        <span class="section-header-title">AI Mock Test</span>
+        <span class="section-header-title">AI Mock Test (Beta Version) </span>
         <span class="section-header-num">03 / AI TEST</span>
       </div>
       <div class="ai-grid">
@@ -895,6 +906,21 @@
         </div>
       </div>
       <div id="ai-test-area"></div>
+    </div>
+
+
+    <!-- ── UPDATES ── -->
+    <div id="tab-updates" class="section">
+      <div class="section-header">
+        <span class="section-header-title">Official Updates</span>
+        <span class="section-header-num">04 / UPDATES</span>
+      </div>
+      <div id="updates-list" class="updates-list">
+        <div class="empty-state">
+          <div class="empty-icon">↻</div>
+          <div class="empty-text">Loading updates...</div>
+        </div>
+      </div>
     </div>
 
   </main>
@@ -947,13 +973,14 @@
 
     // ── TAB SWITCHING ──
     function switchTab(tab) {
-      document.querySelectorAll('.nav-tab').forEach((t, i) =>
-        t.classList.toggle('active', ['pyq', 'resources', 'ai'][i] === tab));
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(`tab-${tab}`).classList.add('active');
-      if (tab === 'resources') loadBranches();
-      if (tab === 'ai') loadAIBranches();
-    }
+        document.querySelectorAll('.nav-tab').forEach((t, i) =>
+            t.classList.toggle('active', ['pyq', 'resources', 'ai', 'updates'][i] === tab));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        if (tab === 'resources') loadBranches();
+        if (tab === 'ai') loadAIBranches();
+        if (tab === 'updates') loadUpdates();
+        }
 
     // ── YEAR DISPLAY HELPER ──
     function formatYearDisplay(yearBase, shift) {
@@ -1459,6 +1486,37 @@
       document.getElementById('ai-test-area').innerHTML = '';
       document.getElementById('ai-main-panel').innerHTML = `<div class="ai-placeholder"><div><div class="ai-placeholder-icon">⚡</div><div class="ai-placeholder-text">Configure your test and click Generate</div></div></div>`;
       document.getElementById('ai-msg').innerHTML = '';
+    }
+
+// ── UPDATES ──
+    async function loadUpdates(force = false) {
+      const list = document.getElementById('updates-list');
+      if (!force && list.dataset.loaded) return;
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">↻</div><div class="empty-text">Loading updates...</div></div>`;
+      try {
+        const res = await fetch(`${BASE_URL}/updates`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          signal: AbortSignal.timeout(10000)
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const updates = await res.json();
+        if (!updates.length) {
+          list.innerHTML = `<div class="empty-state"><div class="empty-icon">∅</div><div class="empty-text">No updates found</div></div>`;
+          return;
+        }
+        list.innerHTML = updates.map(u => `
+          <div class="update-item">
+            <div class="update-dot"></div>
+            <div>
+              <div class="update-text">${u.title}</div>
+              <div class="update-source">${u.source ?? 'GATE Official'} · ${new Date(u.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })} · <a href="${u.source_url}" target="_blank" style="color:var(--accent);text-decoration:none;">gate2026.iitg.ac.in ↗</a></div>
+            </div>
+          </div>`).join('');
+        list.dataset.loaded = '1';
+      } catch (e) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">!</div><div class="empty-text">Could not load updates — ${e.message}</div></div>`;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => { updateYearDropdown(); });
