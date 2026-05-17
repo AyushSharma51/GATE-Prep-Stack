@@ -4,8 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GATEVerse</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Russo+One&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+  /* ── NAV LINKS ── */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .nav-link {
+      padding: 0 16px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .nav-link:hover { color: var(--ink); }
+    .nav-link.active { color: var(--ink); border-bottom: 2px solid var(--accent); font-weight: 600; }
+
+    @media (max-width: 640px) {
+      .nav-link { padding: 0 10px; font-size: 12px; }
+      .nav-links { gap: 0; }
+    }
+
+  
     :root {
       --bg: #f5f3ef;
       --white: #ffffff;
@@ -81,7 +116,7 @@
     }
 
     .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Russo One', sans-serif;
       font-size: 20px;
       letter-spacing: 2px;
       color: var(--ink);
@@ -90,6 +125,7 @@
       align-items: center;
       gap: 7px;
       flex-shrink: 0;
+      cursor: pointer;
     }
 
     .nav-logo-dot {
@@ -100,45 +136,6 @@
     }
 
     .nav-logo-text { line-height: 1; }
-
-    .nav-center {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      justify-content: center;
-    }
-
-    .nav-tabs {
-      display: flex;
-      gap: 0;
-      background: var(--ink);
-      border: 1.5px solid var(--ink);
-      border-radius: 6px;
-      padding: 3px;
-    }
-
-    .nav-tab {
-      padding: 5px 14px;
-      border: none;
-      background: transparent;
-      color: #888;
-      font-family: 'Instrument Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 3px;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .nav-tab.active {
-      background: var(--yellow);
-      color: #0d0d0d;
-      font-weight: 700;
-    }
 
     .nav-right {
       display: flex;
@@ -157,7 +154,6 @@
       white-space: nowrap;
     }
 
-    /* Theme toggle */
     .theme-toggle {
       width: 32px;
       height: 32px;
@@ -173,24 +169,19 @@
     }
 
     .theme-toggle:hover { border-color: var(--ink); }
-
     .theme-toggle svg { width: 14px; height: 14px; fill: var(--ink); transition: fill 0.25s; }
 
-    /* Mobile nav */
     @media (max-width: 640px) {
       nav { padding: 0 14px; height: 48px; }
       .nav-logo { font-size: 16px; letter-spacing: 1.5px; gap: 5px; }
       .nav-logo-dot { width: 6px; height: 6px; }
-      .nav-tab { padding: 4px 9px; font-size: 10px; letter-spacing: 0.2px; }
       .nav-tag { display: none; }
     }
 
     /* ── HERO ── */
     .hero {
-      padding: 60px 48px 52px;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
+          padding: 60px 0 52px;
+          border-bottom: none;
     }
 
     .hero::after {
@@ -284,9 +275,92 @@
       .hero { padding: 40px 20px 36px; }
     }
 
+    /* ── HOME SECTION CARDS ── */
+    .home-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 40px;
+      background: var(--border);
+    }
+
+    .home-card {
+      background: var(--card-bg);
+      padding: 28px 24px 24px;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border: none;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+    }
+
+    .home-card:hover { background: var(--surface); }
+
+    .home-card.active {
+      background: var(--ink);
+      color: var(--yellow);
+    }
+
+    .home-card-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+
+    .home-card.active .home-card-num { color: rgba(255,226,52,0.5); }
+
+    .home-card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: 0.5px;
+    }
+
+    .home-card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      transition: color 0.15s;
+    }
+
+    .home-card.active .home-card-desc { color: rgba(255,226,52,0.6); }
+
+    .home-card-arrow {
+      font-size: 18px;
+      margin-top: auto;
+      padding-top: 8px;
+      opacity: 0.4;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .home-card:hover .home-card-arrow { opacity: 0.8; transform: translateX(3px); }
+    .home-card.active .home-card-arrow { opacity: 1; color: var(--yellow); }
+
+    @media (max-width: 768px) {
+      .home-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .home-cards { grid-template-columns: 1fr; }
+    }
+
     /* ── MAIN ── */
     main { max-width: 1200px; margin: 0 auto; padding: 0 48px 100px; }
     @media (max-width: 640px) { main { padding: 0 16px 80px; } }
+
+    /* Home tab shows hero + cards */
+    #tab-home { display: none; }
+    #tab-home.active { display: block; }
 
     .section { display: none; }
     .section.active { display: block; }
@@ -315,6 +389,23 @@
       color: var(--muted);
       letter-spacing: 2px;
     }
+
+    .section-back {
+      margin-left: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .section-back:hover { border-color: var(--ink); color: var(--ink); }
 
     /* ── FORM ELEMENTS ── */
     .field-label {
@@ -434,7 +525,6 @@
 
     .pyq-sidebar select option { background: #1a1a1a; color: #fff; }
 
-    /* Year display improvement */
     .year-display {
       font-family: 'Space Mono', monospace;
       font-size: 10px;
@@ -602,7 +692,6 @@
 
     .ai-main { padding: 32px 36px; }
 
-    /* Question cards */
     .test-meta-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
     .test-meta-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; color: var(--ink); }
     .test-meta-info { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 1px; }
@@ -649,7 +738,6 @@
     .nat-input-wrap { padding: 14px 16px; background: var(--card-bg); }
     .nat-input-wrap input { max-width: 240px; margin-bottom: 0; font-family: 'Space Mono', monospace; font-size: 14px; }
 
-    /* Timer */
     .timer-bar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--ink); color: var(--yellow); font-family: 'Space Mono', monospace; font-size: 12px; border-radius: var(--radius) var(--radius) 0 0; border: 1px solid var(--border); border-bottom: none; }
     .timer-dot { width: 6px; height: 6px; background: var(--yellow); border-radius: 50%; animation: blink 1s infinite; }
     @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
@@ -660,7 +748,6 @@
     .btn-submit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; background: var(--green); color: #fff; border: none; border-radius: var(--radius); font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; width: 100%; margin-top: 20px; }
     .btn-submit:hover { background: #145e38; }
 
-    /* Score card */
     .score-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 20px; }
     .score-header { background: var(--ink); color: var(--yellow); padding: 24px 28px; text-align: center; }
     .score-num { font-family: 'Bebas Neue', sans-serif; font-size: 72px; line-height: 1; }
@@ -691,13 +778,21 @@
     .perf-bar-wrong { background: var(--red); transition: width 0.8s ease; }
     .perf-bar-skip { background: var(--border); }
 
-    /* Spinner */
     .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .ai-placeholder { min-height: 260px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .ai-placeholder-icon { font-family: 'Bebas Neue', sans-serif; font-size: 88px; color: var(--border); line-height: 1; margin-bottom: 10px; }
     .ai-placeholder-text { font-size: 13px; color: var(--muted); }
+
+    /* ── UPDATES ── */
+    .updates-list { display: flex; flex-direction: column; gap: 0; margin-top: 40px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .update-item { background: var(--card-bg); padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 14px; transition: background 0.15s; }
+    .update-item:last-child { border-bottom: none; }
+    .update-item:hover { background: var(--surface); }
+    .update-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+    .update-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+    .update-source { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
@@ -715,7 +810,6 @@
       .res-controls { grid-template-columns: 1fr; }
     }
 
-    /* Dark mode sidebar fixes */
     [data-theme="dark"] .pyq-sidebar,
     [data-theme="dark"] .ai-sidebar {
       background: #0a0a09;
@@ -726,63 +820,194 @@
     [data-theme="dark"] .ai-sidebar select option {
       background: #111;
     }
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--nav-bg);
+      padding: 32px 48px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+      transition: background 0.25s, border-color 0.25s;
+    }
 
-    /* ── UPDATES ── */
-    .updates-list { display: flex; flex-direction: column; gap: 0; margin-top: 40px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    .update-item { background: var(--card-bg); padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 14px; transition: background 0.15s; }
-    .update-item:last-child { border-bottom: none; }
-    .update-item:hover { background: var(--surface); }
-    .update-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
-    .update-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
-    .update-source { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
+    .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+    }
 
+    .footer-brand-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .footer-tagline {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 220px;
+      line-height: 1.5;
+    }
+
+    .footer-contact-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .footer-contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .footer-contact-item a {
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-contact-item a:hover { color: var(--accent); }
+
+    .footer-contact-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      min-width: 48px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 14px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      background: var(--nav-bg);
+      transition: background 0.25s;
+    }
+
+    @media (max-width: 640px) {
+      footer { padding: 28px 16px; flex-direction: column; gap: 24px; }
+      .footer-bottom { padding: 12px 16px; flex-direction: column; gap: 4px; text-align: center; }
+    }
+    .footer-linkedin {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: all 0.15s;
+    }
+
+    .footer-linkedin:hover {
+      border-color: #0077b5;
+      color: #0077b5;
+      background: rgba(0, 119, 181, 0.06);
+    }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
+  
+<!-- NAV -->
   <nav>
- 
+    <div class="nav-logo" onclick="switchTab('home')">
+          <div class="nav-logo-text">GATEVERSE</div>
+        
+    </div>
 
-    <div class="nav-center">
-      <div class="nav-tabs">
-        <button class="nav-tab active" onclick="switchTab('pyq')">Papers</button>
-        <button class="nav-tab" onclick="switchTab('resources')">Resources</button>
-        <button class="nav-tab" onclick="switchTab('ai')">AI Test</button>
-        <button class="nav-tab" onclick="switchTab('updates')">Updates</button>
-      </div>
+    <div class="nav-links">
+      <a class="nav-link active" onclick="switchTab('home')">Home</a>
+      <a class="nav-link" onclick="switchTab('pyq')">Papers</a>
+      <a class="nav-link" onclick="switchTab('resources')">Resources</a>
+      <a class="nav-link" onclick="switchTab('ai')">AI Test</a>
+      <a class="nav-link" onclick="switchTab('updates')">Updates</a>
     </div>
 
     <div class="nav-right">
       <span class="nav-tag">2026</span>
       <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" aria-label="Toggle theme">
         <svg id="theme-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <!-- Sun icon (shown in light mode) -->
           <path d="M12 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm0 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM4 12a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm15-1h1a1 1 0 110 2h-1a1 1 0 110-2zM6.22 5.22a1 1 0 011.41 0l.71.71a1 1 0 01-1.41 1.41l-.71-.71a1 1 0 010-1.41zm11.17 11.17a1 1 0 011.41 0l.71.71a1 1 0 01-1.41 1.41l-.71-.71a1 1 0 010-1.41zM6.93 17.07l-.71.71a1 1 0 01-1.41-1.41l.71-.71a1 1 0 011.41 1.41zM17.66 6.34l.71-.71a1 1 0 111.41 1.41l-.71.71a1 1 0 01-1.41-1.41zM12 8a4 4 0 100 8 4 4 0 000-8z"/>
         </svg>
       </button>
     </div>
   </nav>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-label">Graduate Aptitude Test in Engineering</div>
-    <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
-    <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
-    <div class="hero-pills">
-      <span class="pill">CSE</span><span class="pill">DA</span><span class="pill">ME</span>
-      <span class="pill">EE</span><span class="pill">CE</span><span class="pill">ECE</span>
-      <span class="pill">Free Access</span><span class="pill">AI Tests</span>
-    </div>
-  </div>
-
   <main>
 
+      <!-- ── HOME: Section Cards ── -->
+      <div id="tab-home" class="section active">
+        <div class="hero">
+          <div class="hero-label">Graduate Aptitude Test in Engineering</div>
+          <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
+          <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
+          <div class="hero-pills">
+            <span class="pill">CSE</span><span class="pill">DA</span><span class="pill">ME</span>
+            <span class="pill">EE</span><span class="pill">CE</span><span class="pill">ECE</span>
+            <span class="pill">Free Access</span><span class="pill">AI Tests</span>
+          </div>
+        </div>
+        <div class="home-cards">
+        <button class="home-card" onclick="switchTab('pyq')">
+          <div class="home-card-num">01 / PAPERS</div>
+          <div class="home-card-title">Previous Year Papers</div>
+          <div class="home-card-desc">Access GATE question papers from 2007 to 2025 across all branches, with shift-wise filtering.</div>
+          <div class="home-card-arrow">→</div>
+        </button>
+        <button class="home-card" onclick="switchTab('resources')">
+          <div class="home-card-num">02 / RESOURCES</div>
+          <div class="home-card-title">Free Video Resources</div>
+          <div class="home-card-desc">Curated YouTube playlists for every subject across all GATE branches — completely free.</div>
+          <div class="home-card-arrow">→</div>
+        </button>
+        <button class="home-card" onclick="switchTab('ai')">
+          <div class="home-card-num">03 / AI TEST</div>
+          <div class="home-card-title">AI Mock Test</div>
+          <div class="home-card-desc">Generate personalised subject tests or full 65-question GATE mock tests powered by AI.</div>
+          <div class="home-card-arrow">→</div>
+        </button>
+        <button class="home-card" onclick="switchTab('updates')">
+          <div class="home-card-num">04 / UPDATES</div>
+          <div class="home-card-title">Official Updates</div>
+          <div class="home-card-desc">Latest notifications and announcements from the official GATE 2026 website.</div>
+          <div class="home-card-arrow">→</div>
+        </button>
+      </div>
+    </div>
+
     <!-- ── PYQ ── -->
-    <div id="tab-pyq" class="section active">
+    <div id="tab-pyq" class="section">
       <div class="section-header">
         <span class="section-header-title">Previous Year Papers</span>
         <span class="section-header-num">01 / PAPERS</span>
+        <button class="section-back" onclick="switchTab('home')">← Home</button>
       </div>
       <div class="pyq-grid">
         <div class="pyq-sidebar">
@@ -800,7 +1025,6 @@
           <select id="pyq-year" onchange="updateShiftDropdown()">
             <option value="">Loading...</option>
           </select>
-
           <div id="shift-wrapper" style="display:none;">
             <label class="field-label" style="color:var(--sidebar-muted)">Shift</label>
             <select id="pyq-shift" onchange="updateYearPreview()">
@@ -809,9 +1033,7 @@
               <option value="-2">Shift 2</option>
             </select>
           </div>
-
           <div id="year-preview" class="year-display"></div>
-
           <button class="btn-primary" onclick="fetchPaper()" style="background:var(--yellow);color:#0d0d0d;font-weight:700;margin-top:4px;">Search Paper →</button>
           <div id="pyq-msg"></div>
         </div>
@@ -832,6 +1054,7 @@
       <div class="section-header">
         <span class="section-header-title">Free Video Resources</span>
         <span class="section-header-num">02 / RESOURCES</span>
+        <button class="section-back" onclick="switchTab('home')">← Home</button>
       </div>
       <div class="res-controls">
         <div class="res-controls-label">Filter by Branch &amp; Subject</div>
@@ -862,8 +1085,9 @@
     <!-- ── AI TEST ── -->
     <div id="tab-ai" class="section">
       <div class="section-header">
-        <span class="section-header-title">AI Mock Test (Beta Version) </span>
+        <span class="section-header-title">AI Mock Test</span>
         <span class="section-header-num">03 / AI TEST</span>
+        <button class="section-back" onclick="switchTab('home')">← Home</button>
       </div>
       <div class="ai-grid">
         <div class="ai-sidebar">
@@ -908,12 +1132,12 @@
       <div id="ai-test-area"></div>
     </div>
 
-
     <!-- ── UPDATES ── -->
     <div id="tab-updates" class="section">
       <div class="section-header">
         <span class="section-header-title">Official Updates</span>
         <span class="section-header-num">04 / UPDATES</span>
+        <button class="section-back" onclick="switchTab('home')">← Home</button>
       </div>
       <div id="updates-list" class="updates-list">
         <div class="empty-state">
@@ -942,23 +1166,18 @@
     function updateThemeIcon(isDark) {
       const icon = document.getElementById('theme-icon');
       if (isDark) {
-        // Moon icon
         icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>';
       } else {
-        // Sun icon
         icon.innerHTML = '<path d="M12 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm0 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM4 12a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm15-1h1a1 1 0 110 2h-1a1 1 0 110-2zM6.22 5.22a1 1 0 011.41 0l.71.71a1 1 0 01-1.41 1.41l-.71-.71a1 1 0 010-1.41zm11.17 11.17a1 1 0 011.41 0l.71.71a1 1 0 01-1.41 1.41l-.71-.71a1 1 0 010-1.41zM6.93 17.07l-.71.71a1 1 0 01-1.41-1.41l.71-.71a1 1 0 011.41 1.41zM17.66 6.34l.71-.71a1 1 0 111.41 1.41l-.71.71a1 1 0 01-1.41-1.41zM12 8a4 4 0 100 8 4 4 0 000-8z"/>';
       }
     }
 
-    // Init theme
     (function() {
       const saved = localStorage.getItem('gate-theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const theme = saved || (prefersDark ? 'dark' : 'light');
       document.documentElement.setAttribute('data-theme', theme);
-      if (theme === 'dark') {
-        updateThemeIcon(true);
-      }
+      if (theme === 'dark') updateThemeIcon(true);
     })();
 
     // ── AI TEST STATE ──
@@ -973,19 +1192,21 @@
 
     // ── TAB SWITCHING ──
     function switchTab(tab) {
-        document.querySelectorAll('.nav-tab').forEach((t, i) =>
-            t.classList.toggle('active', ['pyq', 'resources', 'ai', 'updates'][i] === tab));
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(`tab-${tab}`).classList.add('active');
-        if (tab === 'resources') loadBranches();
-        if (tab === 'ai') loadAIBranches();
-        if (tab === 'updates') loadUpdates();
+          document.querySelectorAll('.nav-link').forEach(l => {
+            l.classList.toggle('active', l.getAttribute('onclick') === `switchTab('${tab}')`);
+          });
+          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+          document.getElementById(`tab-${tab}`).classList.add('active');
+          if (tab === 'resources') loadBranches();
+          if (tab === 'ai') loadAIBranches();
+          if (tab === 'updates') loadUpdates();
+          if (tab !== 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
     // ── YEAR DISPLAY HELPER ──
     function formatYearDisplay(yearBase, shift) {
       if (!yearBase) return '';
-      const baseYear = yearBase.split('-')[0]; // "2025" from "2025" or "2025-1"
+      const baseYear = yearBase.split('-')[0];
       if (shift === '-1') return `${baseYear} · Shift 1`;
       if (shift === '-2') return `${baseYear} · Shift 2`;
       return yearBase.replace('-1', ' · Shift 1').replace('-2', ' · Shift 2');
@@ -1002,7 +1223,6 @@
     };
 
     function getYearLabel(yearVal) {
-      // Convert stored value like "2025-1" → "2025 · Shift 1"
       if (yearVal.endsWith('-1')) return yearVal.replace('-1', ' · Shift 1');
       if (yearVal.endsWith('-2')) return yearVal.replace('-2', ' · Shift 2');
       return yearVal;
@@ -1014,10 +1234,8 @@
       const shiftWrapper = document.getElementById('shift-wrapper');
       const config = BRANCH_YEARS[branch];
       if (!config) return;
-
       yearSel.innerHTML = '<option value="">Select Year</option>' +
         config.years.map(y => `<option value="${y}">${getYearLabel(y)}</option>`).join('');
-
       yearSel.dataset.shiftYears = JSON.stringify(config.shifts || []);
       shiftWrapper.style.display = 'none';
       document.getElementById('pyq-shift').value = '';
@@ -1029,7 +1247,6 @@
       const year = yearSel.value;
       const shiftYears = JSON.parse(yearSel.dataset.shiftYears || '[]');
       const wrapper = document.getElementById('shift-wrapper');
-
       if (year && shiftYears.includes(year)) {
         wrapper.style.display = 'block';
         document.getElementById('pyq-shift').value = '';
@@ -1044,11 +1261,8 @@
       const yearBase = document.getElementById('pyq-year').value;
       const shift = document.getElementById('pyq-shift').value;
       const preview = document.getElementById('year-preview');
-
       if (yearBase) {
-        // Build final year code (for display only)
         const display = formatYearDisplay(yearBase, shift);
-        const finalCode = yearBase + shift;
         preview.textContent = `Paper: GATE ${display}`;
         preview.classList.add('visible');
       } else {
@@ -1063,25 +1277,16 @@
       const year = yearBase + shift;
       const msg = document.getElementById('pyq-msg');
       const result = document.getElementById('pyq-result');
-
-      if (!yearBase) {
-        msg.innerHTML = '<div class="msg-error">⚠ Please select a year</div>';
-        return;
-      }
-
+      if (!yearBase) { msg.innerHTML = '<div class="msg-error">⚠ Please select a year</div>'; return; }
       msg.innerHTML = '<div class="msg-info">Loading paper...</div>';
-
       try {
         const res = await fetch(`${BASE_URL}/papers/${branch}/${year}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
-
         currentPaperUrl = data.url;
         currentPaperName = `GATE_${branch.toUpperCase()}_${year}.pdf`;
-
         const branchLabel = document.getElementById('pyq-branch').selectedOptions[0].text;
         const displayYear = formatYearDisplay(yearBase, shift);
-
         result.innerHTML = `
           <div class="pyq-found-panel">
             <div class="pyq-found-header">
@@ -1096,7 +1301,6 @@
             </div>
             <div style="font-size:13px;color:var(--muted);line-height:1.6">Paper located. Use the buttons above to view or download.</div>
           </div>`;
-
         msg.innerHTML = '<div class="msg-success">✓ Paper located successfully</div>';
       } catch {
         msg.innerHTML = '<div class="msg-error">❌ Paper not found</div>';
@@ -1171,13 +1375,6 @@
         if (!videos?.length) { section.innerHTML = `<div class="video-grid"><div class="empty-state"><div class="empty-icon">∅</div><div class="empty-text">No videos found for this subject</div></div></div>`; return; }
         await renderVideos(videos);
       } catch { document.getElementById('videos-section').innerHTML = `<div class="video-grid"><div class="empty-state"><div class="empty-icon">!</div><div class="empty-text">Could not load videos</div></div></div>`; }
-    }
-
-    function getVideoId(url) {
-      if (!url) return null;
-      if (url.includes('watch?v=')) return url.split('v=')[1].split('&')[0];
-      if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
-      return null;
     }
 
     async function getFirstVideoFromPlaylist(listId) {
@@ -1488,7 +1685,7 @@
       document.getElementById('ai-msg').innerHTML = '';
     }
 
-// ── UPDATES ──
+    // ── UPDATES ──
     async function loadUpdates(force = false) {
       const list = document.getElementById('updates-list');
       if (!force && list.dataset.loaded) return;
@@ -1521,5 +1718,32 @@
 
     document.addEventListener('DOMContentLoaded', () => { updateYearDropdown(); });
   </script>
+  <footer>
+      <div>
+            <div class="footer-brand">
+              GATEVERSE
+            </div>
+        <div class="footer-tagline">Your complete GATE 2026 preparation platform — papers, resources, and AI tests.</div>
+      </div>
+
+      <div>
+        <div class="footer-contact-title">Contact</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <a href="mailto:ayushsharma9118@email.com" class="footer-linkedin" title="Email">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+            Gmail
+          </a>
+          <a href="https://www.linkedin.com/in/ayush-sharma-55a6bb208/" target="_blank" class="footer-linkedin" title="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
 </body>
 </html>
