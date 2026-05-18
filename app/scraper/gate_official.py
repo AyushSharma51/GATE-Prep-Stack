@@ -41,7 +41,8 @@ def fetch_gate_updates():
 
             updates.append({
                 "title": cleaned_text,
-                "url": BASE_URL
+                "url": BASE_URL,
+                "source": "GATE Official"
             })
 
     return updates
@@ -67,7 +68,7 @@ def save_updates_to_db(updates):
 
             new_update = Update(
                 title=item["title"],
-                source="GATE Official",
+                source=item["source"],
                 source_url=item["url"]
             )
 

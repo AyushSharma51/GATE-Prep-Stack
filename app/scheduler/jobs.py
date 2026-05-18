@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-
-from app.scraper.gate_official import (
+from ..scraper.ccmt import fetch_ccmt_updates
+from ..scraper.gate_official import (
     fetch_gate_updates,
     save_updates_to_db
 )
@@ -13,9 +13,15 @@ def scrape_and_store_updates():
 
     print("\nRunning scheduled scraper...\n")
 
-    updates = fetch_gate_updates()
+    all_updates = []
 
-    save_updates_to_db(updates)
+    # GATE updates
+    all_updates.extend(fetch_gate_updates())
+
+    # CCMT updates
+    all_updates.extend(fetch_ccmt_updates())
+
+    save_updates_to_db(all_updates)
 
     print("\nScheduled scraping completed.\n")
 
@@ -26,3 +32,4 @@ scheduler.add_job(
     trigger="interval",
     days=1
 )
+
