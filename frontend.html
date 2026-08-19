@@ -180,8 +180,10 @@
 
     /* ── HERO ── */
     .hero {
-          padding: 60px 0 52px;
-          border-bottom: none;
+      padding: 60px 0 52px;
+      border-bottom: none;
+      position: relative;   /* add */
+      overflow: hidden;     /* add */
     }
 
     .hero::after {
@@ -965,6 +967,32 @@
       <!-- ── HOME: Section Cards ── -->
       <div id="tab-home" class="section active">
         <div class="hero">
+
+          <!-- NEW: animation layer -->
+          <div class="press" style="position:absolute; inset:0; z-index:0; opacity:0.5; pointer-events:none;">
+            <div class="press-container">
+              <div class="sheet"></div><div class="roll"></div>
+              <div class="sheet"></div><div class="roll"></div>
+              <div class="sheet"></div><div class="roll"></div>
+              <div class="sheet"></div>
+              <div class="sheet"></div><div class="sheet"></div><div class="sheet"></div>
+              <div class="sheet"></div><div class="roll"></div>
+            </div>
+          </div>
+
+          <!-- NEW: wrapper so your real content sits on top -->
+          <div style="position:relative; z-index:1;">
+            <div class="hero-label">Graduate Aptitude Test in Engineering</div>
+            <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
+            <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
+            <div class="hero-pills">
+              <span class="pill">CSE</span><span class="pill">DA</span><span class="pill">ME</span>
+              <span class="pill">EE</span><span class="pill">CE</span><span class="pill">ECE</span>
+              <span class="pill">Free Access</span><span class="pill">AI Tests</span>
+            </div>
+          </div>
+
+        </div>
           <div class="hero-label">Graduate Aptitude Test in Engineering</div>
           <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
           <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
