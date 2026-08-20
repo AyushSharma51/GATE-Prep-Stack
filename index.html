@@ -180,10 +180,29 @@
 
     /* ── HERO ── */
     .hero {
-          padding: 60px 0 52px;
-          border-bottom: none;
+      padding: 60px 0 52px;
+      border-bottom: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
     }
 
+    .hero-bg canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
     .hero::after {
       content: 'GATE';
       position: absolute;
@@ -965,13 +984,17 @@
       <!-- ── HOME: Section Cards ── -->
       <div id="tab-home" class="section active">
         <div class="hero">
-          <div class="hero-label">Graduate Aptitude Test in Engineering</div>
-          <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
-          <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
-          <div class="hero-pills">
-            <span class="pill">CSE</span><span class="pill">DA</span><span class="pill">ME</span>
-            <span class="pill">EE</span><span class="pill">CE</span><span class="pill">ECE</span>
-            <span class="pill">Free Access</span><span class="pill">AI Tests</span>
+          <div class="hero-bg"><canvas id="hero-canvas"></canvas></div>
+
+          <div class="hero-content">
+            <div class="hero-label">Graduate Aptitude Test in Engineering</div>
+            <h1 class="hero-title">Your <span>exam prep</span><br>starts <em>here.</em></h1>
+            <p class="hero-sub">Access previous year question papers, curated video resources, and AI-generated mock tests for every GATE branch — all in one place.</p>
+            <div class="hero-pills">
+              <span class="pill">CSE</span><span class="pill">DA</span><span class="pill">ME</span>
+              <span class="pill">EE</span><span class="pill">CE</span><span class="pill">ECE</span>
+              <span class="pill">Free Access</span><span class="pill">AI Tests</span>
+            </div>
           </div>
         </div>
         <div class="home-cards">
@@ -1717,6 +1740,71 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => { updateYearDropdown(); });
+
+    (function() {
+      const canvas = document.getElementById('hero-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, dots;
+
+      function getAccent() {
+        return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1a56ff';
+      }
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        w = canvas.width = rect.width;
+        h = canvas.height = rect.height;
+        const count = Math.floor((w * h) / 14000);
+        dots = Array.from({ length: count }, () => ({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.25,
+          vy: (Math.random() - 0.5) * 0.25,
+          r: Math.random() * 1.5 + 0.5
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        const accent = getAccent();
+        dots.forEach(d => {
+          d.x += d.vx;
+          d.y += d.vy;
+          if (d.x < 0 || d.x > w) d.vx *= -1;
+          if (d.y < 0 || d.y > h) d.vy *= -1;
+        });
+        for (let i = 0; i < dots.length; i++) {
+          for (let j = i + 1; j < dots.length; j++) {
+            const dx = dots[i].x - dots[j].x;
+            const dy = dots[i].y - dots[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+              ctx.strokeStyle = accent;
+              ctx.globalAlpha = (1 - dist / 120) * 0.15;
+              ctx.lineWidth = 0.6;
+              ctx.beginPath();
+              ctx.moveTo(dots[i].x, dots[i].y);
+              ctx.lineTo(dots[j].x, dots[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = accent;
+        dots.forEach(d => {
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      window.addEventListener('resize', resize);
+      draw();
+    })();
   </script>
   <footer>
       <div>
