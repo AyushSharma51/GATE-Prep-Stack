@@ -43,7 +43,7 @@ def validate_questions(questions_list):
 def call_llm(client, prompt):
     """Single LLM call — returns validated question list."""
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[
             {
                 "role": "system",

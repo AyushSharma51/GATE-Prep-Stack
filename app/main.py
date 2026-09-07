@@ -6,6 +6,7 @@ from .routes.branches import router as branch_router
 from .routes.subjects import router as subjects_router
 from .routes.questions import router as questions_router
 from .routes.updates import router as updates_router
+from .routes.auth import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 from .scheduler.jobs import scheduler
 from dotenv import load_dotenv
@@ -29,6 +30,7 @@ app.include_router(branch_router)
 app.include_router(subjects_router)
 app.include_router(questions_router)
 app.include_router(updates_router)
+app.include_router(auth_router)
 
 
 @app.get("/Health-Check", tags=["System"])
