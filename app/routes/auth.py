@@ -106,6 +106,17 @@ def login(
         "message": "Login successful"
     }
 
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=False,
+        samesite="lax",
+    )
+
+    return {"message": "Logged out successfully"}
+
 @router.get("/me")
 def get_me(current_user: User = Depends(get_current_user)):
     return {

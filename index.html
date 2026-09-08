@@ -144,6 +144,114 @@
       flex-shrink: 0;
     }
 
+    .nav-auth-btn {
+      height: 32px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: var(--yellow);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .nav-auth-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    /* ── AUTH MODAL ── */
+    .auth-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.55);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-modal.show {
+      display: flex;
+    }
+
+    .auth-box {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .auth-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .auth-box input {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 16px;
+    }
+
+    .auth-box .btn-primary {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .auth-msg {
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .auth-switch {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .auth-switch button {
+      border: none;
+      background: none;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 4px;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
     .nav-tag {
       font-family: 'Space Mono', monospace;
       font-size: 10px;
@@ -970,7 +1078,9 @@
     </div>
 
     <div class="nav-right">
-      <span class="nav-tag">2026</span>
+      <div id="auth-area">
+        <button class="nav-auth-btn" onclick="showLogin()">Login</button>
+      </div>
       <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" aria-label="Toggle theme">
         <svg id="theme-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm0 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM4 12a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm15-1h1a1 1 0 110 2h-1a1 1 0 110-2zM6.22 5.22a1 1 0 011.41 0l.71.71a1 1 0 01-1.41 1.41l-.71-.71a1 1 0 010-1.41zm11.17 11.17a1 1 0 011.41 0l.71.71a1 1 0 01-1.41 1.41l-.71-.71a1 1 0 010-1.41zM6.93 17.07l-.71.71a1 1 0 01-1.41-1.41l.71-.71a1 1 0 011.41 1.41zM17.66 6.34l.71-.71a1 1 0 111.41 1.41l-.71.71a1 1 0 01-1.41-1.41zM12 8a4 4 0 100 8 4 4 0 000-8z"/>
@@ -1171,11 +1281,226 @@
     </div>
 
   </main>
+  <!-- ── AUTH MODAL ── -->
+  <div id="auth-modal" class="auth-modal">
+    <div class="auth-box">
 
+      <button class="auth-close" onclick="closeAuthModal()">×</button>
+
+      <div class="auth-title" id="auth-title">Welcome Back</div>
+      <div class="auth-subtitle" id="auth-subtitle">
+        Login to track your mock test progress.
+      </div>
+
+      <!-- SIGN UP NAME -->
+      <div id="auth-name-field" style="display:none;">
+        <label class="field-label">Name</label>
+        <input type="text" id="auth-name" placeholder="Your name">
+      </div>
+
+      <label class="field-label">Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com">
+
+      <label class="field-label">Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••">
+
+      <button class="btn-primary" id="auth-submit-btn" onclick="submitAuth()">
+        Login
+      </button>
+
+      <div id="auth-msg"></div>
+
+      <div class="auth-switch">
+        <span id="auth-switch-text">Don't have an account?</span>
+        <button onclick="toggleAuthMode()" id="auth-switch-btn">
+          Sign Up
+        </button>
+      </div>
+
+    </div>
+  </div>
   <script>
     const BASE_URL = "https://gate-backend-ry16.onrender.com";
+    // ── AUTH STATE ──
+
+    let authMode = "login";
+
+    function showLogin() {
+      authMode = "login";
+
+      document.getElementById("auth-title").textContent = "Welcome Back";
+      document.getElementById("auth-subtitle").textContent =
+        "Login to track your mock test progress.";
+
+      document.getElementById("auth-name-field").style.display = "none";
+
+      document.getElementById("auth-submit-btn").textContent = "Login";
+
+      document.getElementById("auth-switch-text").textContent =
+        "Don't have an account?";
+
+      document.getElementById("auth-switch-btn").textContent = "Sign Up";
+
+      document.getElementById("auth-msg").textContent = "";
+
+      document.getElementById("auth-modal").classList.add("show");
+    }
+
+    function toggleAuthMode() {
+      authMode = authMode === "login" ? "signup" : "login";
+
+      if (authMode === "signup") {
+        document.getElementById("auth-title").textContent = "Create Account";
+        document.getElementById("auth-subtitle").textContent =
+          "Create an account to track your mock test progress.";
+
+        document.getElementById("auth-name-field").style.display = "block";
+
+        document.getElementById("auth-submit-btn").textContent = "Sign Up";
+
+        document.getElementById("auth-switch-text").textContent =
+          "Already have an account?";
+
+        document.getElementById("auth-switch-btn").textContent = "Login";
+      } else {
+        showLogin();
+        return;
+      }
+
+      document.getElementById("auth-msg").textContent = "";
+    }
+
+    function closeAuthModal() {
+      document.getElementById("auth-modal").classList.remove("show");
+    }
+
+    async function submitAuth() {
+      const email = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+      const msg = document.getElementById("auth-msg");
+
+      if (!email || !password) {
+        msg.textContent = "Please enter your email and password.";
+        return;
+      }
+
+      if (authMode === "signup") {
+        const name = document.getElementById("auth-name").value.trim();
+
+        if (!name) {
+          msg.textContent = "Please enter your name.";
+          return;
+        }
+      }
+
+      msg.textContent = "Please wait...";
+
+      try {
+        const endpoint =
+          authMode === "login"
+            ? `${BASE_URL}/auth/login`
+            : `${BASE_URL}/auth/signup`;
+
+        const body =
+          authMode === "login"
+            ? {
+                email: email,
+                password: password,
+              }
+            : {
+                name: document.getElementById("auth-name").value.trim(),
+                email: email,
+                password: password,
+              };
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(body),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          msg.textContent =
+            data.detail || "Something went wrong. Please try again.";
+          return;
+        }
+
+        msg.textContent =
+          authMode === "login"
+            ? "Login successful!"
+            : "Account created successfully!";
+
+        setTimeout(() => {
+          closeAuthModal();
+          loadAuthState();
+        }, 700);
+
+      } catch (error) {
+        console.error(error);
+        msg.textContent =
+          "Unable to connect to the server. Please try again.";
+      }
+    }
+    // ── CHECK LOGIN STATE ──
+
+    async function loadAuthState() {
+      try {
+        const response = await fetch(`${BASE_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const authArea = document.getElementById("auth-area");
+
+        if (!response.ok) {
+          authArea.innerHTML = `
+            <button class="nav-auth-btn" onclick="showLogin()">
+              Login
+            </button>
+          `;
+          return;
+        }
+
+        const user = await response.json();
+
+        authArea.innerHTML = `
+          <span style="font-size: 12px; margin-right: 8px;">
+            Hi, ${user.name}
+          </span>
+          <button class="nav-auth-btn" onclick="logoutUser()">
+            Logout
+          </button>
+        `;
+
+      } catch (error) {
+        console.error("Auth check failed:", error);
+      }
+    }
+
+// ── LOGOUT ──
+
+    async function logoutUser() {
+      try {
+        await fetch(`${BASE_URL}/auth/logout`, {
+          method: "POST",
+          credentials: "include",
+        });
+
+        loadAuthState();
+
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    }
     let currentPaperUrl = null;
     let currentPaperName = null;
+  
+
 
     // ── THEME ──
     function toggleTheme() {
