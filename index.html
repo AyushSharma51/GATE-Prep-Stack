@@ -1613,8 +1613,8 @@
 
 
   <!-- Vanta.js libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.halo.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.1/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.topology.min.js"></script>
   
   <script>
     const BASE_URL = "https://gate-backend-ry16.onrender.com";
@@ -1622,12 +1622,11 @@
 
     let authMode = "login";
 
-    let gateHalo = null;
+    let gateTopology = null;
 
-    function initGateHalo() {
-
-      if (typeof THREE === "undefined") {
-        console.error("THREE.js failed to load.");
+    function initGateTopology() {
+      if (typeof p5 === "undefined") {
+        console.error("p5.js failed to load.");
         return;
       }
 
@@ -1636,47 +1635,37 @@
         return;
       }
 
-      if (typeof VANTA.HALO === "undefined") {
-        console.error("VANTA.HALO failed to load.");
+      if (typeof VANTA.TOPOLOGY === "undefined") {
+        console.error("VANTA.TOPOLOGY failed to load.");
         return;
       }
 
-      const haloElement = document.getElementById("halo-bg");
+      const topologyElement = document.getElementById("halo-bg");
 
-      if (!haloElement) {
+      if (!topologyElement) {
         console.error("#halo-bg not found.");
         return;
       }
 
-      gateHalo = VANTA.HALO({
-        el: haloElement,
-
-        THREE: THREE,
+      gateTopology = VANTA.TOPOLOGY({
+        el: "#halo-bg",
 
         mouseControls: true,
         touchControls: true,
         gyroControls: false,
 
-        minHeight: 200,
-        minWidth: 200,
+        minHeight: 200.00,
+        minWidth: 200.00,
 
-        scale: 1,
-        scaleMobile: 1,
+        scale: 1.00,
+        scaleMobile: 1.00,
 
-        backgroundColor: 0x0,
-        baseColor: 0xd00ff,
-
-        size: 3.00,
-        amplitudeFactor: 3.00,
-
-        xOffset: 0.15,
-        yOffset: -0.05
+        backgroundColor: 0x2222,
+        color: 0x85ff
       });
-
-      console.log("GATEVerse HALO loaded.");
     }
 
-    document.addEventListener("DOMContentLoaded", initGateHalo);
+    document.addEventListener("DOMContentLoaded", initGateTopology);
 
     function showLogin() {
       authMode = "login";
