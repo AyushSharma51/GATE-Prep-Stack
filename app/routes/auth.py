@@ -21,6 +21,7 @@ router = APIRouter(
 @router.post("/signup")
 def signup(
     data: SignupRequest,
+    response: Response,
     db: Session = Depends(get_db)
 ):
     # 1. Check whether email already exists
@@ -52,13 +53,30 @@ def signup(
     db.commit()
     db.refresh(user)
 
-    # 5. Return response
+    # 5. Create JWT
+    token = create_access_token(
+        user_id=str(user.id),
+        role=user.role
+    )
+
+    # 6. Store JWT in HttpOnly cookie
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=60 * 60
+    )
+
+    # 7. Return response
     return {
         "message": "Account created successfully",
         "user_id": str(user.id),
         "name": user.name,
         "email": user.email
     }
+
 
 @router.post("/login")
 def login(
