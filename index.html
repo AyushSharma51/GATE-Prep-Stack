@@ -171,15 +171,21 @@
     #halo-bg {
       position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
       z-index: 0;
       overflow: hidden;
+      pointer-events: none;
     }
 
-    /* Make sure Vanta's canvas fills the screen */
     #halo-bg canvas {
+      position: absolute !important;
+      inset: 0 !important;
       width: 100% !important;
       height: 100% !important;
+      display: block !important;
     }
+
     /* ── AUTH MODAL ── */
     .auth-modal {
       display: none;
@@ -277,15 +283,9 @@
 
       padding: 20px;
 
-      background: #f5f3ed;
+      background: #131a43;
 
       overflow: hidden;
-    }
-
-    /* Vanta will sit behind everything */
-    #auth-gate > * {
-      position: relative;
-      z-index: 2;
     }
 
 
@@ -316,24 +316,6 @@
       animation: gateCardIn 0.7s cubic-bezier(.2,.8,.2,1) both;
     }
 
-
-    /* Extra offset border */
-    .auth-gate-box::before {
-      content: "";
-
-      position: absolute;
-
-      top: 7px;
-      left: 7px;
-      right: -7px;
-      bottom: -7px;
-
-      border: 1px solid #111;
-
-      border-radius: 0;
-
-      z-index: -1;
-    }
 
 
     /* ─────────────────────────────
@@ -1321,7 +1303,6 @@
   <!-- ── AUTH GATE ── -->
   <div id="auth-gate">
 
-    <!-- Vanta HALO background -->
     <div id="halo-bg"></div>
 
     <div class="auth-gate-box">
@@ -1623,36 +1604,58 @@
     let gateHalo = null;
 
     function initGateHalo() {
+
+      if (typeof THREE === "undefined") {
+        console.error("THREE.js failed to load.");
+        return;
+      }
+
       if (typeof VANTA === "undefined") {
         console.error("Vanta.js failed to load.");
         return;
       }
 
+      if (typeof VANTA.HALO === "undefined") {
+        console.error("VANTA.HALO failed to load.");
+        return;
+      }
+
+      const haloElement = document.getElementById("halo-bg");
+
+      if (!haloElement) {
+        console.error("#halo-bg not found.");
+        return;
+      }
+
       gateHalo = VANTA.HALO({
-        el: "#halo-bg",
+        el: haloElement,
+
+        THREE: THREE,
 
         mouseControls: true,
         touchControls: true,
         gyroControls: false,
 
-        minHeight: 200.00,
-        minWidth: 200.00,
+        minHeight: 200,
+        minWidth: 200,
 
-        scale: 1.00,
-        scaleMobile: 1.00,
+        scale: 1,
+        scaleMobile: 1,
 
         backgroundColor: 0x131a43,
         baseColor: 0x1fa59,
 
-        size: 1.00,
-        amplitudeFactor: 1.00,
+        size: 1,
+        amplitudeFactor: 1,
 
         xOffset: 0,
         yOffset: 0
       });
+
+      console.log("GATEVerse HALO loaded.");
     }
 
-    initGateHalo();
+    document.addEventListener("DOMContentLoaded", initGateHalo);
 
     function showLogin() {
       authMode = "login";
