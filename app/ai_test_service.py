@@ -25,6 +25,9 @@ def validate_questions(questions_list):
     """Filter out malformed questions."""
     valid = []
     for q in questions_list:
+
+        if not isinstance(q, dict):
+            continue
         if "question" not in q or "question_type" not in q:
             continue
         q["question_type"] = q["question_type"].lower()
@@ -40,27 +43,58 @@ def validate_questions(questions_list):
     return valid
 
 
-def call_llm(client, prompt):
-    """Single LLM call — returns validated question list."""
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-120b",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a specialized GATE exam generator that only outputs valid JSON.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.4,
-        response_format={"type": "json_object"},
-    )
-    content = response.choices[0].message.content.strip()
-    try:
-        raw_data = json.loads(content)
-        questions_list = raw_data.get("questions", []) if isinstance(raw_data, dict) else []
-    except json.JSONDecodeError:
-        return []
-    return validate_questions(questions_list)
+def call_llm(client, prompt, required_questions=10):
+    """LLM call with retry if too few valid questions are returned."""
+
+    for attempt in range(3):
+
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a specialized GATE exam generator. "
+                        "Generate high-quality questions and output ONLY valid JSON."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
+            temperature=0.4,
+            response_format={"type": "json_object"},
+        )
+
+        content = response.choices[0].message.content.strip()
+
+        try:
+            raw_data = json.loads(content)
+
+            questions_list = (
+                raw_data.get("questions", [])
+                if isinstance(raw_data, dict)
+                else []
+            )
+
+        except json.JSONDecodeError:
+            questions_list = []
+
+        valid_questions = validate_questions(questions_list)
+
+        print(
+            f"AI attempt {attempt + 1}: "
+            f"{len(questions_list)} generated, "
+            f"{len(valid_questions)} valid"
+        )
+
+        # Enough valid questions
+        if len(valid_questions) >= required_questions:
+            return valid_questions[:required_questions]
+
+    # All attempts failed
+    return valid_questions
 
 
 def generate_mcqs(
@@ -144,7 +178,11 @@ def generate_mcqs(
         """
 
         # --- 2. API CALL (subject) ---
-        valid_questions = call_llm(client, prompt)
+        valid_questions = call_llm(
+            client,
+            prompt,
+            required_questions=num_questions
+        )
 
     elif test_type == "full":
         if not branch_name:
@@ -317,8 +355,17 @@ def generate_mcqs(
         """
 
         # --- 2. API CALL (full — two separate calls, then merge) ---
-        ga_questions = call_llm(client, ga_prompt)
-        core_questions = call_llm(client, core_prompt)
+        ga_questions = call_llm(
+            client,
+            ga_prompt,
+            required_questions=10
+        )
+
+        core_questions = call_llm(
+            client,
+            core_prompt,
+            required_questions=55
+        )
         valid_questions = ga_questions + core_questions
 
     else:

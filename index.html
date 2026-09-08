@@ -295,20 +295,24 @@
 
     .auth-gate-box {
       position: relative;
+      z-index: 10;
 
       width: 100%;
       max-width: 420px;
 
       padding: 48px 40px;
 
-      background: #f8f7f3;
+      /* Slightly transparent so Halo is visible */
+      background: rgba(248, 247, 243, 0.78);
+
+      /* Glass effect */
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
 
       border: 1px solid #111;
 
-      /* SHARP CORNERS */
       border-radius: 0;
 
-      /* Brutalist offset shadow */
       box-shadow: 8px 8px 0 #111;
 
       text-align: center;
