@@ -241,6 +241,27 @@
       box-sizing: border-box;
       margin-bottom: 16px;
     }
+    .auth-box input {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 16px;
+
+      background: var(--white);
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+
+    .auth-box input::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    .auth-box input:focus {
+      color: var(--ink);
+      background: var(--white);
+      outline: none;
+      border-color: var(--accent);
+    }
 
     .auth-box .btn-primary {
       width: 100%;
@@ -1649,11 +1670,11 @@
         backgroundColor: 0x131a43,
         baseColor: 0x1fa59,
 
-        size: 1,
-        amplitudeFactor: 1,
+        size: 3.00,
+        amplitudeFactor: 3.00,
 
-        xOffset: 0,
-        yOffset: 0
+        xOffset: 0.5,
+        yOffset: 0.5
       });
 
       console.log("GATEVerse HALO loaded.");
