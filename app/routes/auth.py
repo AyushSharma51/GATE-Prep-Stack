@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-
+import os
 from app.database import get_db
 from app.db_models import User
 from app.schemas.auth import SignupRequest
@@ -64,8 +64,8 @@ def signup(
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=os.getenv("ENVIRONMENT") == "production",
+        samesite="none" if os.getenv("ENVIRONMENT") == "production" else "lax",
         max_age=60 * 60
     )
 
@@ -126,11 +126,13 @@ def login(
 
 @router.post("/logout")
 def logout(response: Response):
+    is_production = os.getenv("ENVIRONMENT") == "production"
+
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=is_production,
+        samesite="none" if is_production else "lax",
     )
 
     return {"message": "Logged out successfully"}
