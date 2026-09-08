@@ -115,9 +115,10 @@ def login(
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=60 * 60
+        secure=True,
+        samesite="none",
+        max_age=60 * 60,
+        path="/",
     )
 
     return {
