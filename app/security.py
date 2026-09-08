@@ -18,6 +18,8 @@ password_hash = PasswordHash.recommended()
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
+print("JWT_SECRET_KEY loaded:", bool(JWT_SECRET_KEY))
+
 if not JWT_SECRET_KEY:
     raise RuntimeError("JWT_SECRET_KEY is not configured")
 
