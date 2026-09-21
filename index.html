@@ -283,6 +283,8 @@
       padding: 0;
       margin-left: 4px;
     }
+
+    
     /* ─────────────────────────────
       GATEVERSE LOGIN SCREEN
       ───────────────────────────── */
@@ -303,7 +305,26 @@
       overflow: hidden;
     }
 
+    .auth-gate-guest {
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px;
 
+      border: none;
+      background: transparent;
+
+      color: #555;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .auth-gate-guest:hover {
+      color: #111;
+    }
     /* ─────────────────────────────
       LOGIN CARD
       ───────────────────────────── */
@@ -1346,6 +1367,10 @@
         Sign Up
       </button>
 
+      <button class="auth-gate-guest" onclick="continueAsGuest()">
+        Continue as Guest
+      </button>
+
       <div id="gate-msg"></div>
 
     </div>
@@ -1688,6 +1713,17 @@
       document.getElementById("auth-modal").classList.add("show");
     }
 
+    function showLoginRequired() {
+      const login = confirm(
+        "Login is required to access AI Test.\n\nWould you like to login?"
+      );
+
+      if (login) {
+        showLogin();
+      }
+    }
+
+    
     function showSignup() {
       authMode = "signup";
 
@@ -1840,6 +1876,7 @@
 
         // User is logged in
         const user = await response.json();
+        currentUser = user;
 
         authArea.innerHTML = `
           <span style="font-size: 12px; margin-right: 8px;">
@@ -1865,6 +1902,15 @@
       }
     }
 
+    function continueAsGuest() {
+      document.body.classList.remove("auth-locked");
+
+      const authGate = document.getElementById("auth-gate");
+      authGate.style.display = "none";
+
+      // Mark this browser session as a guest
+      sessionStorage.setItem("gateGuest", "true");
+    }
 // ── LOGOUT ──
     async function logoutUser() {
       try {
@@ -1923,6 +1969,7 @@
 
     // ── AI TEST STATE ──
     let currentTestType = 'subject';
+    let currentUser = null;
     let currentTest = null;
     let userAnswers = {};
     let timerInterval = null;
@@ -1933,16 +1980,37 @@
 
     // ── TAB SWITCHING ──
     function switchTab(tab) {
-          document.querySelectorAll('.nav-link').forEach(l => {
-            l.classList.toggle('active', l.getAttribute('onclick') === `switchTab('${tab}')`);
-          });
-          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-          document.getElementById(`tab-${tab}`).classList.add('active');
-          if (tab === 'resources') loadBranches();
-          if (tab === 'ai') loadAIBranches();
-          if (tab === 'updates') loadUpdates();
-          if (tab !== 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+
+      // AI Test requires login
+      if (tab === "ai" && !currentUser) {
+        showLoginRequired();
+        return;
+      }
+
+      document.querySelectorAll('.nav-link').forEach(l => {
+        l.classList.toggle(
+          'active',
+          l.getAttribute('onclick') === `switchTab('${tab}')`
+        );
+      });
+
+      document.querySelectorAll('.section').forEach(s =>
+        s.classList.remove('active')
+      );
+
+      document.getElementById(`tab-${tab}`).classList.add('active');
+
+      if (tab === 'resources') loadBranches();
+      if (tab === 'ai') loadAIBranches();
+      if (tab === 'updates') loadUpdates();
+
+      if (tab !== 'home') {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }
 
     // ── YEAR DISPLAY HELPER ──
     function formatYearDisplay(yearBase, shift) {
